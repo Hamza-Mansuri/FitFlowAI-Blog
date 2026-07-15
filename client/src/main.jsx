@@ -1,0 +1,37 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+
+import { ThemeProvider } from "./context/DarkTheme";
+
+import App from "./App";
+import "./index.css";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import { HelmetProvider } from "react-helmet-async";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <App />
+
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="colored"
+          />
+
+        </ThemeProvider>
+      </BrowserRouter>
+    </HelmetProvider>
+  </React.StrictMode>
+);
