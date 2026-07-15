@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import { ThemeProvider } from "./context/DarkTheme";
+import { AuthProvider } from "./context/AuthContext";
 
 import App from "./App";
 import "./index.css";
@@ -16,21 +17,23 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter>
-        <ThemeProvider>
-          <App />
+        <AuthProvider>
+          <ThemeProvider>
+            <App />
 
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="colored"
-          />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              pauseOnHover
+              draggable
+              theme="colored"
+            />
 
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </BrowserRouter>
     </HelmetProvider>
   </React.StrictMode>

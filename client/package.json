@@ -16,6 +16,7 @@
     "@tiptap/starter-kit": "^3.27.3",
     "apexcharts": "^5.16.0",
     "axios": "^1.18.1",
+    "browser-image-compression": "^2.0.2",
     "framer-motion": "^12.42.0",
     "quill": "^2.0.3",
     "react": "^19.2.7",

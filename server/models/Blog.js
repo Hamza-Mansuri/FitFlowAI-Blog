@@ -59,4 +59,25 @@ const blogSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.model("Blog", blogSchema);
+// Compile models targeting 5 separate collections (folders)
+export const WorkoutBlog = mongoose.model("WorkoutBlog", blogSchema, "workouts");
+export const NutritionBlog = mongoose.model("NutritionBlog", blogSchema, "nutritions");
+export const RecoveryBlog = mongoose.model("RecoveryBlog", blogSchema, "recoverys");
+export const HealthBlog = mongoose.model("HealthBlog", blogSchema, "healths");
+export const LifestyleBlog = mongoose.model("LifestyleBlog", blogSchema, "lifestyles");
+
+export const getModelByCategory = (category) => {
+  const cat = (category || "").toLowerCase().trim();
+  if (cat === "workout") return WorkoutBlog;
+  if (cat === "nutrition") return NutritionBlog;
+  if (cat === "recovery") return RecoveryBlog;
+  if (cat === "health") return HealthBlog;
+  if (cat === "lifestyle") return LifestyleBlog;
+  return WorkoutBlog; // default fallback
+};
+
+export const getAllModels = () => {
+  return [WorkoutBlog, NutritionBlog, RecoveryBlog, HealthBlog, LifestyleBlog];
+};
+
+export default WorkoutBlog;

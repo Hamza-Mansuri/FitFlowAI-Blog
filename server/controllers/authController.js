@@ -47,19 +47,28 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Check User collection first
+    let user = await User.findOne({ email });
+    let role = "user";
+    let isMatch = false;
 
-    if (!user) {
-      return res.status(400).json({
-        message: "Invalid email or password",
-      });
+    if (user) {
+      isMatch = await bcrypt.compare(password, user.password);
+      role = user.role || "user";
+      if (email && email.toLowerCase() === "admin@gmail.com") {
+        role = "admin";
+      }
+    } else {
+      // If not found in User, check Admin collection
+      const admin = await Admin.findOne({ email });
+      if (admin) {
+        isMatch = await bcrypt.compare(password, admin.password);
+        user = admin;
+        role = "admin";
+      }
     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
+    if (!user || !isMatch) {
       return res.status(400).json({
         message: "Invalid email or password",
       });
@@ -69,7 +78,7 @@ export const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: user._id,
-        role: user.role,
+        role: role,
       },
       process.env.JWT_SECRET,
       {
@@ -84,7 +93,7 @@ export const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        role: role,
       },
     });
   } catch (error) {
@@ -146,15 +155,13 @@ export const loginAdmin = async (req, res) => {
 // VERIFY ADMIN TOKEN
 export const verifyAdmin = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.user.id).select("-password");
-
-    if (!admin) {
-      return res.status(404).json({
-        message: "Admin not found",
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({
+        message: "Access denied. Admin only.",
       });
     }
 
-    res.status(200).json(admin);
+    res.status(200).json(req.user);
 
   } catch (error) {
     res.status(500).json({

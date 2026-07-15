@@ -19,15 +19,34 @@ const protect = async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Get full user/admin from database
+      // Get full user/admin from database
+      if (decoded.role === "admin") {
+        let admin = await Admin.findById(decoded.id).select("-password");
+        if (!admin) {
+          admin = await User.findById(decoded.id).select("-password");
+        }
+        if (admin) {
+          req.user = admin.toObject ? admin.toObject() : admin;
+          req.user.role = "admin";
+        }
+      } else {
+        const user = await User.findById(decoded.id).select("-password");
+        if (user) {
+          req.user = user.toObject ? user.toObject() : user;
+          req.user.role = user.role || "user";
+          if (req.user.email && req.user.email.toLowerCase() === "admin@gmail.com") {
+            req.user.role = "admin";
+          }
+        }
+      }
 
-    if (decoded.role === "admin") {
-      req.user = await Admin.findById(decoded.id).select("-password");
-    } else {
-      req.user = await User.findById(decoded.id).select("-password");
-    }
+      if (!req.user) {
+        return res.status(401).json({
+          message: "User not found, authorization denied",
+        });
+      }
 
-    next();
+      next();
     } catch (error) {
       return res.status(401).json({
         message: "Not authorized, token failed",

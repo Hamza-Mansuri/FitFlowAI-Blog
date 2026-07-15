@@ -23,10 +23,10 @@ useEffect(() => {
 if (!editor) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-300 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-300 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950">
 
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-2 border-b border-slate-200 p-3">
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 p-3 dark:border-slate-800">
 
         <button
           type="button"
@@ -34,7 +34,7 @@ if (!editor) return null;
           className={`rounded-lg px-3 py-2 font-semibold transition ${
             editor.isActive("bold")
               ? "bg-green-600 text-white"
-              : "bg-slate-100 hover:bg-slate-200"
+              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200"
           }`}
         >
           B
@@ -46,7 +46,7 @@ if (!editor) return null;
           className={`rounded-lg px-3 py-2 italic transition ${
             editor.isActive("italic")
               ? "bg-green-600 text-white"
-              : "bg-slate-100 hover:bg-slate-200"
+              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200"
           }`}
         >
           I
@@ -58,7 +58,7 @@ if (!editor) return null;
           className={`rounded-lg px-3 py-2 transition ${
             editor.isActive("heading", { level: 1 })
               ? "bg-green-600 text-white"
-              : "bg-slate-100 hover:bg-slate-200"
+              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200"
           }`}
         >
           H1
@@ -70,7 +70,7 @@ if (!editor) return null;
           className={`rounded-lg px-3 py-2 transition ${
             editor.isActive("bulletList")
               ? "bg-green-600 text-white"
-              : "bg-slate-100 hover:bg-slate-200"
+              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-200"
           }`}
         >
           • List
@@ -81,7 +81,7 @@ if (!editor) return null;
       {/* Editor */}
       <EditorContent
         editor={editor}
-        className="min-h-[320px] p-5"
+        className="min-h-[320px] p-5 text-slate-800 dark:text-slate-200 outline-none"
       />
 
     </div>

@@ -42,17 +42,17 @@ function Stats() {
             return (
               <div
                 key={item.label}
-                className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-green-200 hover:shadow-lg"
+                className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-green-200 hover:shadow-lg dark:border-slate-800 dark:bg-slate-950 dark:hover:border-green-500"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-600 transition group-hover:bg-green-600 group-hover:text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-600 transition group-hover:bg-green-600 group-hover:text-white dark:bg-green-950/40 dark:text-green-400">
                   <Icon size={22} />
                 </div>
 
-                <h3 className="mt-4 text-3xl font-bold text-slate-900">
+                <h3 className="mt-4 text-3xl font-bold text-slate-900 dark:text-white">
                   {item.value}
                 </h3>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   {item.label}
                 </p>
               </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import API from "../services/api";
+import imageCompression from "browser-image-compression";
 
 import { toast } from "react-toastify";
 
@@ -34,6 +35,9 @@ function AdminDashboard() {
   const fileInputRef = useRef(null);
 
   const [search, setSearch] = useState("");
+  const [selectedCatFilter, setSelectedCatFilter] = useState("All");
+  const [tablePage, setTablePage] = useState(1);
+  const tableBlogsPerPage = 6;
 
   const [loading, setLoading] = useState(false);
 
@@ -44,22 +48,33 @@ function AdminDashboard() {
   const categoryRef = useRef(null);
 
   const [deleteModal, setDeleteModal] = useState(false);
-
   const [blogToDelete, setBlogToDelete] = useState(null);
+
+  const [isDarkMode, setIsDarkMode] = useState(
+    document.documentElement.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    setIsDarkMode(document.documentElement.classList.contains("dark"));
+
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const navigate = useNavigate();
 
   const categories = [
     { value: "Workout", icon: "🏋️" },
     { value: "Nutrition", icon: "🥗" },
-    { value: "Weight Loss", icon: "🔥" },
-    { value: "Muscle Building", icon: "💪" },
-    { value: "Recipes", icon: "🍽️" },
-    { value: "Supplements", icon: "🧪" },
     { value: "Recovery", icon: "🛌" },
+    { value: "Health", icon: "❤️" },
     { value: "Lifestyle", icon: "🌿" },
-    { value: "Mental Health", icon: "🧠" },
-    { value: "General", icon: "📚" },
   ];
 
   const filteredCategories = categories.filter((category) =>
@@ -116,6 +131,37 @@ useEffect(() => {
     );
 
 }, []);
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Show initial preview instantly
+    setPreview(URL.createObjectURL(file));
+    setImage(file);
+
+    const options = {
+      maxSizeMB: 0.42, // target around 420 KB
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+
+    try {
+      setLoading(true);
+      const compressedFile = await imageCompression(file, options);
+      const namedCompressed = new File([compressedFile], file.name, {
+        type: compressedFile.type,
+        lastModified: Date.now(),
+      });
+      setImage(namedCompressed);
+      setPreview(URL.createObjectURL(namedCompressed));
+      toast.success(`Image compressed: ${(file.size / 1024 / 1024).toFixed(2)}MB → ${(namedCompressed.size / 1024).toFixed(0)}KB`);
+    } catch (error) {
+      console.error("Compression failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -271,9 +317,18 @@ const handleCancelEdit = () => {
 };
 
 
-    const filteredBlogs = blogs.filter((blog) =>
-    blog.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesSearch = blog.title.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = selectedCatFilter === "All" || blog.category === selectedCatFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const totalTablePages = Math.ceil(filteredBlogs.length / tableBlogsPerPage);
+  const currentTableBlogs = filteredBlogs.slice((tablePage - 1) * tableBlogsPerPage, tablePage * tableBlogsPerPage);
+
+  useEffect(() => {
+    setTablePage(1);
+  }, [search, selectedCatFilter]);
 
     
 
@@ -328,15 +383,19 @@ const monthlyChart = {
   ],
 
   options: {
+    theme: {
+      mode: isDarkMode ? "dark" : "light",
+    },
     chart: {
-  toolbar: {
-    show: false,
-  },
-  zoom: {
-    enabled: false,
-  },
-  height: 260,
-},
+      background: "transparent",
+      toolbar: {
+        show: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+      height: 260,
+    },
 
 legend: {
   show: false,
@@ -382,7 +441,11 @@ const pieChart = {
   series: categoryCounts.map((item) => item.count),
 
   options: {
+    theme: {
+      mode: isDarkMode ? "dark" : "light",
+    },
     chart: {
+      background: "transparent",
       type: "donut",
       toolbar: {
         show: false,
@@ -435,7 +498,7 @@ const pieChart = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
 
-  <div className="min-h-screen bg-slate-100 py-6">
+  <div className="min-h-screen bg-slate-100 py-6 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
 
     <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
@@ -510,23 +573,23 @@ const pieChart = {
 
   {/* ================= Monthly Chart ================= */}
 
-  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
 
     <div className="mb-4 flex items-center justify-between">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-950/40">
           📈
         </div>
 
         <div>
 
-          <h2 className="text-lg font-bold text-slate-800">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
             Monthly Publishing
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Blogs published this year
           </p>
 
@@ -559,23 +622,23 @@ const pieChart = {
 
   {/* ================= Category Chart ================= */}
 
-  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
 
     <div className="mb-4 flex items-center justify-between">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-950/40">
           🥧
         </div>
 
         <div>
 
-          <h2 className="text-lg font-bold text-slate-800">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
             Category Distribution
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Content breakdown
           </p>
 
@@ -583,13 +646,13 @@ const pieChart = {
 
       </div>
 
-      <div className="rounded-2xl bg-slate-100 px-4 py-2 text-center">
+      <div className="rounded-2xl bg-slate-100 px-4 py-2 text-center dark:bg-slate-900">
 
-        <p className="text-xs uppercase text-slate-500">
+        <p className="text-xs uppercase text-slate-500 dark:text-slate-400">
           Categories
         </p>
 
-        <h3 className="text-xl font-bold text-green-600">
+        <h3 className="text-xl font-bold text-green-600 dark:text-green-400">
           {totalCategories}
         </h3>
 
@@ -618,25 +681,25 @@ const pieChart = {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-<div className="rounded-3xl bg-white p-8 shadow-2xl">
+<div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
 
 <div className="mb-8 flex items-center gap-4">
 
-<div className="rounded-2xl bg-green-100 p-4">
+<div className="rounded-2xl bg-green-100 p-4 dark:bg-green-950/40">
 
-<FaIcons.FaPenNib className="text-2xl text-green-600"/>
+<FaIcons.FaPenNib className="text-2xl text-green-600 dark:text-green-400"/>
 
 </div>
 
 <div>
 
-<h2 className="text-3xl font-bold">
+<h2 className="text-3xl font-bold text-slate-800 dark:text-white">
 
 {editingId ? "Update Blog" : "Create Blog"}
 
 </h2>
 
-<p className="text-slate-500">
+<p className="text-slate-500 dark:text-slate-400">
 
 Fill all required information before publishing.
 
@@ -646,7 +709,7 @@ Fill all required information before publishing.
 
 <button
       onClick={handleLogout}
-      className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100"
+      className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-950/30 dark:bg-red-950/20"
     >
       <FaIcons.FaSignOutAlt />
       Logout
@@ -668,7 +731,7 @@ placeholder="Blog Title"
 value={formData.title}
 onChange={handleChange}
 disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
 />
 
 <div
@@ -729,6 +792,8 @@ className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition d
         fade-in
         zoom-in-95
         duration-200
+        dark:border-slate-800
+        dark:bg-slate-950
       "
     >
 
@@ -743,7 +808,7 @@ className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition d
           onChange={(e) =>
             setCategorySearch(e.target.value)
           }
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100"
+          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
         />
 
       </div>
@@ -769,7 +834,7 @@ className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition d
               setShowCategories(false);
 
             }}
-            className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-green-50"
+            className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-green-50 dark:hover:bg-slate-900 dark:text-slate-100"
           >
 
             <div className="flex items-center gap-3">
@@ -823,7 +888,7 @@ placeholder="Author"
 value={formData.author}
 onChange={handleChange}
 disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
 />
 
 <input
@@ -833,7 +898,7 @@ placeholder="Read Time"
 value={formData.readTime}
 onChange={handleChange}
 disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
 />
 
 </div>
@@ -845,12 +910,12 @@ placeholder="Short Description"
 value={formData.description}
 onChange={handleChange}
 disabled={loading}
-className="w-full rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="w-full rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
 />
 
 <div>
 
-  <label className="mb-2 block font-semibold text-slate-700">
+  <label className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
     Blog Content
   </label>
 
@@ -875,7 +940,7 @@ placeholder="Expert Tip"
 value={formData.expertTip}
 onChange={handleChange}
 disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
 />
 
 <textarea
@@ -885,7 +950,7 @@ placeholder="Takeaways (one per line)"
 value={formData.takeaways}
 onChange={handleChange}
 disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
 />
 
 </div>
@@ -912,10 +977,7 @@ PNG • JPG • WEBP
   className="hidden"
   accept="image/*"
   disabled={loading}
-  onChange={(e) => {
-  setImage(e.target.files[0]);
-  setPreview(URL.createObjectURL(e.target.files[0]));
-}}
+  onChange={handleImageChange}
 />
 
 </label>
@@ -1038,25 +1100,21 @@ Remove
 
 <hr className="my-14" />
 
-<div className="rounded-3xl bg-white p-8 shadow-2xl">
+<div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
 
 <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
 
-<div>
+    <div>
 
-<h2 className="text-3xl font-bold text-slate-800">
+      <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
+        Blog Management
+      </h2>
 
-Blog Management
+      <p className="mt-1 text-slate-500 dark:text-slate-400">
+        Manage, edit and organize your published blogs.
+      </p>
 
-</h2>
-
-<p className="mt-1 text-slate-500">
-
-Manage, edit and organize your published blogs.
-
-</p>
-
-</div>
+    </div>
 
 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
 
@@ -1065,12 +1123,25 @@ type="text"
 placeholder="Search blog..."
 value={search}
 onChange={(e) => setSearch(e.target.value)}
-className="w-full sm:w-72 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100"
+className="w-full sm:w-72 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
 />
+
+<select
+value={selectedCatFilter}
+onChange={(e) => setSelectedCatFilter(e.target.value)}
+className="w-full sm:w-48 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-955"
+>
+  <option value="All">All Categories</option>
+  <option value="Workout">Workout</option>
+  <option value="Nutrition">Nutrition</option>
+  <option value="Recovery">Recovery</option>
+  <option value="Health">Health</option>
+  <option value="Lifestyle">Lifestyle</option>
+</select>
 
 <div className="flex justify-center rounded-xl bg-green-100 px-5 py-3 font-bold text-green-700">
 
-{blogs.length} Blogs
+{filteredBlogs.length} Blogs
 
 </div>
 
@@ -1078,11 +1149,11 @@ className="w-full sm:w-72 rounded-xl border border-slate-300 bg-slate-50 px-4 py
 
 </div>
 
-<div className="overflow-x-auto rounded-2xl border border-slate-200">
+<div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
 
 <table className="min-w-[950px] w-full">
 
-<thead className="bg-slate-800 text-white">
+<thead className="bg-slate-800 text-white dark:bg-slate-950">
 
 <tr>
 
@@ -1128,11 +1199,11 @@ Actions
 
 <tbody>
 
-{filteredBlogs.map((blog) => (
+{currentTableBlogs.map((blog) => (
 
 <tr
 key={blog._id}
-className="border-b transition duration-300 hover:bg-green-50"
+className="border-b transition duration-300 hover:bg-green-50 dark:border-slate-850 dark:hover:bg-slate-900/40"
 >
 
 <td className="p-4">
@@ -1147,13 +1218,13 @@ className="h-20 w-28 rounded-xl object-cover shadow"
 
 <td className="p-4">
 
-<h3 className="font-bold text-slate-800">
+<h3 className="font-bold text-slate-800 dark:text-white">
 
 {blog.title}
 
 </h3>
 
-<p className="mt-1 text-sm text-slate-500">
+<p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
 
 {blog.readTime}
 
@@ -1163,7 +1234,7 @@ className="h-20 w-28 rounded-xl object-cover shadow"
 
 <td className="p-4">
 
-<span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
+<span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-400">
 
 {blog.category}
 
@@ -1183,13 +1254,13 @@ className="h-20 w-28 rounded-xl object-cover shadow"
 
 <div>
 
-<p className="font-semibold">
+<p className="font-semibold text-slate-850 dark:text-slate-200">
 
 {blog.author}
 
 </p>
 
-<p className="text-xs text-slate-500">
+<p className="text-xs text-slate-500 dark:text-slate-400">
 
 Author
 
@@ -1203,7 +1274,7 @@ Author
 
 <td className="p-4">
 
-<span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700">
+<span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
 
 Published
 
@@ -1256,6 +1327,44 @@ Delete
 }
 
 </div>   
+
+{/* Table Pagination Controls */}
+{totalTablePages > 1 && (
+  <div className="mt-8 flex items-center justify-center gap-2">
+    <button
+      type="button"
+      onClick={() => setTablePage(prev => Math.max(prev - 1, 1))}
+      disabled={tablePage === 1}
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+    >
+      ◀
+    </button>
+
+    {Array.from({ length: totalTablePages }, (_, i) => i + 1).map((page) => (
+      <button
+        key={page}
+        type="button"
+        onClick={() => setTablePage(page)}
+        className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold transition ${
+          tablePage === page
+            ? "bg-green-600 text-white shadow-lg shadow-green-500/20"
+            : "border border-slate-200 bg-white text-slate-600 hover:border-green-500 hover:text-green-600"
+        }`}
+      >
+        {page}
+      </button>
+    ))}
+
+    <button
+      type="button"
+      onClick={() => setTablePage(prev => Math.min(prev + 1, totalTablePages))}
+      disabled={tablePage === totalTablePages}
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+    >
+      ▶
+    </button>
+  </div>
+)}
 
 </div>   
 

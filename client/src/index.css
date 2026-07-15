@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-slate-955: #0e1320;
+  --color-slate-850: #1b2336;
+  --color-slate-150: #f1f5f9;
+}
 
 /* Enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -24,12 +31,17 @@ html {
 
 body {
   font-family: "Poppins", sans-serif;
-  background: #f8fafc;
+  background-color: #f8fafc;
   color: #111827;
   overflow-x: hidden;
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+.dark body {
+  background-color: #0b0f19;
+  color: #f8fafc;
 }
 
 img {
@@ -60,4 +72,91 @@ textarea {
   }
 }
 
-@plugin "@tailwindcss/typography";
+/* Beautiful Rich Text Fallbacks (.prose styles) */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: #0f172a !important; /* text-slate-900 */
+  font-weight: 700 !important;
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.3 !important;
+}
+
+.prose h1 { font-size: 2.25rem !important; }
+.prose h2 { font-size: 1.75rem !important; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+.prose h3 { font-size: 1.5rem !important; }
+.prose h4 { font-size: 1.25rem !important; }
+
+.prose p {
+  color: #334155 !important; /* text-slate-700 */
+  margin-top: 0 !important;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.8 !important;
+  font-size: 1.125rem !important; /* prose-lg */
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 0 !important;
+  margin-bottom: 1.5rem !important;
+  padding-left: 1.75rem !important;
+}
+
+.prose li {
+  color: #334155 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.8 !important;
+  font-size: 1.125rem !important;
+  list-style-type: disc !important;
+}
+
+.prose ol li {
+  list-style-type: decimal !important;
+}
+
+.prose strong {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.prose blockquote {
+  border-left-width: 4px !important;
+  border-left-color: #10b981 !important; /* emerald-500 */
+  padding-left: 1.25rem !important;
+  font-style: italic !important;
+  color: #475569 !important;
+  margin: 2rem 0 !important;
+  background-color: #f8fafc;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Dark Mode Overrides */
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark .prose p,
+.dark .prose li {
+  color: #cbd5e1 !important;
+}
+
+.dark .prose strong {
+  color: #ffffff !important;
+}
+
+.dark .prose blockquote {
+  background-color: #0f172a;
+  color: #94a3b8 !important;
+}

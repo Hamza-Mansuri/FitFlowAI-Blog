@@ -67,17 +67,17 @@ function BlogCard({ blog }) {
   };
 
   return (
-    <Link to={`/blog/${blog._id}`}>
+    <Link to={`/blog/${blog._id}`} className="group block">
       <motion.article
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -5 }}
         transition={{ duration: 0.3 }}
-        className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-xl"
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:border-green-200 hover:shadow-xl dark:border-slate-800 dark:bg-slate-950 dark:hover:border-green-500"
       >
         {/* Image */}
 
-        <div className="relative overflow-hidden bg-slate-100">
+        <div className="relative overflow-hidden bg-slate-100 dark:bg-slate-900">
 
           <motion.img
             src={blog.image}
@@ -89,7 +89,7 @@ function BlogCard({ blog }) {
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
-          <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 backdrop-blur">
+          <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 backdrop-blur dark:bg-slate-950/80 dark:text-slate-200">
             {blog.category}
           </span>
 
@@ -98,25 +98,24 @@ function BlogCard({ blog }) {
         {/* Content */}
 
         <div className="space-y-3 p-4">
-          <h2 className="text-xl font-bold leading-snug text-slate-900 transition group-hover:text-green-600">
+          <h2 className="text-xl font-bold leading-snug text-slate-900 transition group-hover:text-green-600 dark:text-white dark:group-hover:text-green-400">
             {blog.title}
           </h2>
 
-          <p className="line-clamp-3 text-sm leading-6 text-slate-500">
-            Learn science-backed strategies for fitness, nutrition,
-            muscle building, fat loss, and long-term healthy living.
+          <p className="line-clamp-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+            {blog.description}
           </p>
 
           {/* Footer */}
 
-          <div className="flex items-center justify-between border-t border-gray-100 pt-4">
+          <div className="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-slate-900">
             <div>
-              <p className="text-sm font-semibold text-slate-800">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 {blog.author}
               </p>
 
-              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                <FaClock className="text-green-600" />
+              <div className="mt-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-450">
+                <FaClock className="text-green-600 dark:text-green-400" />
                 <span>{blog.readTime}</span>
               </div>
             </div>

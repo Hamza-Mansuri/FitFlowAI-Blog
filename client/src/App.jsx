@@ -1,16 +1,13 @@
 import Navbar from "./components/layout/Navbar";
 import AppRoutes from "./routes/AppRoutes";
-// import ScrollToTop from "./components/common/ScrollToTop";
-
-import AdminDashboard from "./pages/AdminDashboard";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
+  const { user } = useAuth();
   return (
     <>
-      {/* <ScrollToTop /> */}
-      <Navbar />
+      {user && <Navbar />}
       <AppRoutes />
-      
     </>
   );
 }

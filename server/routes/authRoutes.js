@@ -22,4 +22,12 @@ router.get(
   verifyAdmin
 );
 
+router.get(
+  "/verify",
+  protect,
+  (req, res) => {
+    res.status(200).json(req.user);
+  }
+);
+
 export default router;

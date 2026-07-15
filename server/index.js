@@ -7,6 +7,7 @@ import connectDB from "./config/db.js";
 import blogRoutes from "./routes/blogRoutes.js";
 
 import authRoutes from "./routes/authRoutes.js";
+import newsletterRoutes from "./routes/newsletterRoutes.js";
 
 // dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 // Routes
 app.use("/api/blogs", blogRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/newsletter", newsletterRoutes);
 
 // Test Route
 app.get("/", (req, res) => {
