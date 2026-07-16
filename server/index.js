@@ -23,27 +23,30 @@ connectDB();
 app.use(helmet()); // Secure HTTP headers
 
 const allowedOrigins = [
-  process.env.CLIENT_URL,
   "http://localhost:5173",
+  process.env.CLIENT_URL,
 ].filter(Boolean);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin) {
+
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin))
         return callback(null, true);
-      }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+      console.log("Blocked Origin:", origin);
 
-      console.error("Blocked Origin:", origin);
-
-      callback(new Error("Not allowed by CORS"));
+      return callback(new Error("CORS blocked"));
     },
 
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization"
+    ],
   })
 );
 
