@@ -27,23 +27,22 @@ const allowedOrigins = [
   "http://localhost:5173",
 ].filter(Boolean);
 
-console.log("Allowed Origins:", allowedOrigins);
-
 app.use(
   cors({
-    origin: (origin, callback) => {
-      console.log("Incoming Origin:", origin);
-
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        process.env.NODE_ENV !== "production"
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.error("Blocked Origin:", origin);
+
+      callback(new Error("Not allowed by CORS"));
     },
+
     credentials: true,
   })
 );
