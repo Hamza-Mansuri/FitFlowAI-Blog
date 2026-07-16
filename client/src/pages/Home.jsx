@@ -12,6 +12,8 @@ import API from "../services/api";
 import SEO from "../components/common/SEO";
 import { SITE_URL } from "../config/site";
 import { useAuth } from "../context/AuthContext";
+import PageTransition from "../components/common/PageTransition";
+import GlowBackground from "../components/common/GlowBackground";
 
 function Home() {
   const { user } = useAuth();
@@ -79,30 +81,37 @@ function Home() {
   }, []);
 
   return (
-    <>
+    <PageTransition>
       <SEO
         title="FitFlowAI | Fitness Blogs & Nutrition Guides"
         description="Read expert fitness articles, workout guides, nutrition tips and healthy lifestyle blogs."
         url={SITE_URL}
       />
 
-      <div className="bg-slate-50 transition-colors duration-300 dark:bg-slate-900 min-h-screen">
-        <Hero />
-        <FeaturedBlog />
-        <Stats />
-        <CategoryList
-          selectedCategory={selectedCategory}
-          setSelectedCategory={handleSetCategory}
-        />
-        <SearchBar
-          search={search}
-          setSearch={handleSetSearch}
-        />
-        <TrendingBlogs blogs={filteredBlogs} loading={loading} />
-        <Newsletter />
-        <Footer />
+      <div className="relative bg-slate-50/50 transition-colors duration-500 dark:bg-[#05070d] min-h-screen overflow-hidden">
+        {/* Animated background glows */}
+        <GlowBackground />
+
+        <div className="relative z-10 space-y-12 pb-1">
+          <Hero />
+          <FeaturedBlog />
+          <Stats />
+          <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6">
+            <CategoryList
+              selectedCategory={selectedCategory}
+              setSelectedCategory={handleSetCategory}
+            />
+            <SearchBar
+              search={search}
+              setSearch={handleSetSearch}
+            />
+          </div>
+          <TrendingBlogs blogs={filteredBlogs} loading={loading} />
+          <Newsletter />
+          <Footer />
+        </div>
       </div>
-    </>
+    </PageTransition>
   );
 }
 

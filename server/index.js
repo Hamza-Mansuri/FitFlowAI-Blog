@@ -1,6 +1,7 @@
 import express from "express";
 // import dotenv from "dotenv";
 import cors from "cors";
+import helmet from "helmet";
 
 import connectDB from "./config/db.js";
 
@@ -19,7 +20,27 @@ const app = express();
 connectDB();
 
 // Middlewares
-app.use(cors());
+app.use(helmet()); // Secure HTTP headers
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow local development, server-to-server, or custom domains configured via environment
+      if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== "production") {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // Routes

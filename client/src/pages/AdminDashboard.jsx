@@ -397,37 +397,66 @@ const monthlyChart = {
       height: 260,
     },
 
-legend: {
-  show: false,
-},
+    legend: {
+      show: false,
+    },
 
-    colors: ["#16a34a"],
+    colors: ["#22c55e"],
 
     dataLabels: {
       enabled: false,
     },
 
     stroke: {
-  curve: "smooth",
-  width: 3,
-},
+      curve: "smooth",
+      width: 3.5,
+    },
+
+    fill: {
+      type: "gradient",
+      gradient: {
+        shade: "green",
+        type: "vertical",
+        shadeIntensity: 0.5,
+        inverseColors: false,
+        opacityFrom: 0.45,
+        opacityTo: 0.05,
+        stops: [0, 90, 100]
+      }
+    },
 
     grid: {
-  borderColor: "#e2e8f0",
-  strokeDashArray: 5,
-},
+      borderColor: isDarkMode ? "#1e293b" : "#f1f5f9",
+      strokeDashArray: 5,
+    },
 
     xaxis: {
       categories: monthNames,
+      labels: {
+        style: {
+          colors: isDarkMode ? "#94a3b8" : "#64748b",
+        }
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
     },
 
     yaxis: {
       min: 0,
       forceNiceScale: true,
+      labels: {
+        style: {
+          colors: isDarkMode ? "#94a3b8" : "#64748b",
+        }
+      }
     },
 
     tooltip: {
-      theme: "light",
+      theme: isDarkMode ? "dark" : "light",
     },
   },
 };
@@ -452,27 +481,42 @@ const pieChart = {
       },
     },
 
+    colors: ["#10b981", "#059669", "#0d9488", "#0f766e", "#115e59"],
+
     labels: categoryCounts.map((item) => item.label),
 
     legend: {
       position: "bottom",
-      fontSize: "14px",
+      fontSize: "13px",
+      labels: {
+        colors: isDarkMode ? "#94a3b8" : "#64748b",
+      }
     },
 
     dataLabels: {
-      enabled: true,
+      enabled: false,
     },
 
     plotOptions: {
       pie: {
         donut: {
-          size: "65%",
+          size: "70%",
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: "Total Blogs",
+              color: isDarkMode ? "#f1f5f9" : "#0f172a",
+              formatter: () => totalBlogs,
+            }
+          }
         },
       },
     },
 
     stroke: {
-      colors: ["#fff"],
+      colors: isDarkMode ? ["#0d1320"] : ["#fff"],
+      width: 2,
     },
 
     responsive: [
@@ -614,7 +658,7 @@ const pieChart = {
     <Chart
       options={monthlyChart.options}
       series={monthlyChart.series}
-      type="line"
+      type="area"
       height={240}
     />
 

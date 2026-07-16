@@ -1,33 +1,17 @@
 import { useParams, Link } from "react-router-dom";
-import {
-  FaArrowLeft,
-  // FaClock,
-  // FaCalendarAlt,
-  // FaUser,
-  // FaLightbulb,
-  // FaCheckCircle,
-} from "react-icons/fa";
-
+import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState, useRef } from "react";
-
-//import blogs from "../data/blogs";
 import Container from "../components/layout/Container";
-
-// import axios from "axios";
-
 import BlogHero from "../components/blog/BlogHero";
-
 import ExpertTipCard from "../components/blog/ExpertTipCard";
-
 import TakeawayCard from "../components/blog/TakeawayCard";
-
 import ShareButtons from "../components/blog/ShareButtons";
-
 import SEO from "../components/common/SEO";
-
 import { SITE_URL } from "../config/site";
-
 import API from "../services/api";
+import PageTransition from "../components/common/PageTransition";
+import GlowBackground from "../components/common/GlowBackground";
+import { motion } from "framer-motion";
 
 function BlogDetails() {
   const { id } = useParams();
@@ -50,48 +34,34 @@ function BlogDetails() {
 
   const hasIncremented = useRef(null);
 
-useEffect(() => {
-  const fetchBlog = async () => {
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        if (hasIncremented.current !== id) {
+          hasIncremented.current = id;
+          await API.patch(`/blogs/${id}/view`);
+        }
 
-  try {
+        const res = await API.get(`/blogs/${id}`);
+        setBlog(res.data);
 
-    // Increase view count only once per blog ID session
-    if (hasIncremented.current !== id) {
-      hasIncremented.current = id;
-      await API.patch(`/blogs/${id}/view`);
-    }
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
 
-    // Get updated blog
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-    const res = await API.get(`/blogs/${id}`);
-
-    setBlog(res.data);
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-
-  } catch (error) {
-    console.error(error);
-  }
-
-};
-
-  fetchBlog();
-}, [id]);
-
-  // useEffect(() => {
-  //   window.scrollTo({
-  //     top: 0,
-  //     behavior: "smooth",
-  //   });
-  // }, [id]);
+    fetchBlog();
+  }, [id]);
 
   if (!blog) {
     return (
       <div className="py-24 text-center">
-        <h2 className="text-3xl font-bold text-slate-900">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
           Article Not Found
         </h2>
 
@@ -106,9 +76,7 @@ useEffect(() => {
   }
 
   return (
-
-    <>
-
+    <PageTransition>
       <SEO
         title={`${blog.title} | FitFlowAI`}
         description={blog.description}
@@ -118,86 +86,88 @@ useEffect(() => {
 
       {/* Reading Progress Bar */}
       <div 
-        className="fixed left-0 top-[64px] z-50 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-75"
+        className="fixed left-0 top-[64px] z-50 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-75 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
         style={{ width: `${scrollProgress}%` }}
       />
 
-            <section className="py-8">
-        <Container>
-          {/* Hero Image */}
+      <div className="relative bg-slate-50/50 transition-colors duration-500 dark:bg-[#05070d] min-h-screen overflow-hidden pb-16">
+        {/* Animated background glows */}
+        <GlowBackground />
 
-          <BlogHero blog={blog} />
+        <section className="relative z-10 py-10">
+          <Container>
+            {/* Hero Image */}
+            <BlogHero blog={blog} />
 
-          {/* Content */}
+            {/* Content Container */}
+            <div className="relative max-w-4xl mx-auto mt-12 px-2 sm:px-6">
+              
+              <article
+                className="
+                  prose
+                  prose-lg
+                  prose-slate
+                  max-w-none
+                  dark:prose-invert
 
-        <article
-          className="
-            prose
-            prose-lg
-            prose-slate
-            max-w-4xl
-            mx-auto
-            mt-12
-            dark:prose-invert
+                  prose-headings:text-slate-900
+                  prose-headings:font-bold
+                  dark:prose-headings:text-white
 
-            prose-headings:text-slate-900
-            prose-headings:font-bold
-            dark:prose-headings:text-white
+                  prose-p:text-slate-700
+                  prose-p:leading-8
+                  dark:prose-p:text-slate-300
 
-            prose-p:text-slate-700
-            prose-p:leading-8
-            dark:prose-p:text-slate-350
+                  prose-li:text-slate-750
+                  dark:prose-li:text-slate-300
+                  prose-strong:text-slate-900
+                  dark:prose-strong:text-white
 
-            prose-li:text-slate-700
-            dark:prose-li:text-slate-350
-            prose-strong:text-slate-900
-            dark:prose-strong:text-white
+                  prose-a:text-green-600
+                  prose-a:no-underline
+                  hover:prose-a:underline
+                  dark:prose-a:text-green-400
 
-            prose-a:text-green-600
-            prose-a:no-underline
-            hover:prose-a:underline
-            dark:prose-a:text-green-400
+                  prose-img:rounded-3xl
+                  prose-img:shadow-xl
 
-            prose-img:rounded-2xl
-            prose-img:shadow-lg
+                  prose-blockquote:border-green-500
+                  dark:prose-blockquote:border-green-400
+                "
+                dangerouslySetInnerHTML={{
+                  __html: blog.content,
+                }}
+              />
 
-            prose-blockquote:border-green-500
-            dark:prose-blockquote:border-green-400
-          "
-          dangerouslySetInnerHTML={{
-            __html: blog.content,
-          }}
-        />
+              {/* Cards wrapped in premium container spacing */}
+              <div className="mt-12 space-y-6">
+                <ExpertTipCard tip={blog.expertTip} />
+                <TakeawayCard takeaways={blog.takeaways} />
+              </div>
 
-          {/* Expert Tip */}
+              {/* Share Buttons */}
+              <div className="mt-10 border-t border-slate-200/60 dark:border-slate-800/40 pt-8">
+                <ShareButtons blog={blog} />
+              </div>
 
-          <ExpertTipCard tip={blog.expertTip} />
+              {/* Back Link */}
+              <div className="mt-12">
+                <motion.div whileHover={{ x: -4 }} whileTap={{ scale: 0.98 }} className="inline-block">
+                  <Link
+                    to="/"
+                    className="inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3.5 font-bold text-white transition hover:from-green-600 hover:to-emerald-700 shadow-md shadow-green-500/10 hover:shadow-lg"
+                  >
+                    <FaArrowLeft />
+                    Back to Articles
+                  </Link>
+                </motion.div>
+              </div>
 
-          {/* Takeaways */}
-
-          <TakeawayCard takeaways={blog.takeaways} />
-
-          {/* Share Buttons */}
-
-          <ShareButtons
-            blog={blog}
-          />
-
-          {/* Back */}
-
-          <div className="mx-auto mt-14 max-w-4xl">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-3 rounded-full bg-green-600 px-6 py-3 font-semibold text-white transition hover:bg-green-700"
-            >
-              <FaArrowLeft />
-              Back to Articles
-            </Link>
-          </div>
-        </Container>
-      </section>
-
-    </>
+            </div>
+          </Container>
+        </section>
+      </div>
+    </PageTransition>
   );
 }
 

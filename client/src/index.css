@@ -29,19 +29,52 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Custom premium scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0b0f19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid #f8fafc;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border: 2px solid #0b0f19;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: #f8fafc;
-  color: #111827;
+  font-family: "Outfit", "Poppins", sans-serif;
+  background-color: #fafbfc;
+  color: #0f172a;
   overflow-x: hidden;
   transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+    background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .dark body {
-  background-color: #0b0f19;
-  color: #f8fafc;
+  background-color: #05070d;
+  color: #f1f5f9;
 }
 
 img {
@@ -60,16 +93,73 @@ textarea {
   font: inherit;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(.92);
+/* Animated floating background elements */
+@keyframes blob-float-slow {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
   }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
 
-  to {
-    opacity: 1;
-    transform: scale(1);
+@keyframes blob-float-medium {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
   }
+  50% {
+    transform: translate(-40px, 40px) scale(1.15);
+  }
+}
+
+.animate-blob-slow {
+  animation: blob-float-slow 20s infinite alternate ease-in-out;
+}
+
+.animate-blob-medium {
+  animation: blob-float-medium 15s infinite alternate ease-in-out;
+}
+
+/* Custom premium styles */
+.premium-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.dark .premium-glass {
+  background: rgba(10, 15, 28, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.premium-glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(241, 245, 249, 0.9);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+.dark .premium-glass-card {
+  background: rgba(13, 20, 35, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.premium-glow-green {
+  box-shadow: 0 0 40px 5px rgba(34, 197, 94, 0.06);
+}
+
+.dark .premium-glow-green {
+  box-shadow: 0 0 50px 10px rgba(34, 197, 94, 0.04);
 }
 
 /* Beautiful Rich Text Fallbacks (.prose styles) */
@@ -81,36 +171,36 @@ textarea {
 .prose h6 {
   color: #0f172a !important; /* text-slate-900 */
   font-weight: 700 !important;
-  margin-top: 2rem !important;
-  margin-bottom: 1rem !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.25rem !important;
   line-height: 1.3 !important;
 }
 
-.prose h1 { font-size: 2.25rem !important; }
-.prose h2 { font-size: 1.75rem !important; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+.prose h1 { font-size: 2.5rem !important; }
+.prose h2 { font-size: 1.85rem !important; border-bottom: 1px solid rgba(226, 232, 240, 0.8); padding-bottom: 0.5rem; }
 .prose h3 { font-size: 1.5rem !important; }
 .prose h4 { font-size: 1.25rem !important; }
 
 .prose p {
   color: #334155 !important; /* text-slate-700 */
   margin-top: 0 !important;
-  margin-bottom: 1.5rem !important;
-  line-height: 1.8 !important;
+  margin-bottom: 1.75rem !important;
+  line-height: 1.85 !important;
   font-size: 1.125rem !important; /* prose-lg */
 }
 
 .prose ul,
 .prose ol {
   margin-top: 0 !important;
-  margin-bottom: 1.5rem !important;
-  padding-left: 1.75rem !important;
+  margin-bottom: 1.75rem !important;
+  padding-left: 2rem !important;
 }
 
 .prose li {
   color: #334155 !important;
-  margin-top: 0.5rem !important;
-  margin-bottom: 0.5rem !important;
-  line-height: 1.8 !important;
+  margin-top: 0.6rem !important;
+  margin-bottom: 0.6rem !important;
+  line-height: 1.85 !important;
   font-size: 1.125rem !important;
   list-style-type: disc !important;
 }
@@ -127,13 +217,14 @@ textarea {
 .prose blockquote {
   border-left-width: 4px !important;
   border-left-color: #10b981 !important; /* emerald-500 */
-  padding-left: 1.25rem !important;
+  padding-left: 1.5rem !important;
   font-style: italic !important;
   color: #475569 !important;
-  margin: 2rem 0 !important;
-  background-color: #f8fafc;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  margin: 2.5rem 0 !important;
+  background-color: rgba(241, 245, 249, 0.5);
+  border-radius: 0 1rem 1rem 0;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 /* Dark Mode Overrides */
@@ -143,8 +234,8 @@ textarea {
 .dark .prose h4,
 .dark .prose h5,
 .dark .prose h6 {
-  color: #f8fafc !important;
-  border-color: #334155 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(51, 65, 85, 0.4) !important;
 }
 
 .dark .prose p,
@@ -157,6 +248,6 @@ textarea {
 }
 
 .dark .prose blockquote {
-  background-color: #0f172a;
+  background-color: rgba(15, 23, 42, 0.4);
   color: #94a3b8 !important;
 }
