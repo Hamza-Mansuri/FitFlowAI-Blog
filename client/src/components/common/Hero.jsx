@@ -6,12 +6,13 @@ function Hero() {
   const [seg1, setSeg1] = useState("");
   const [seg2, setSeg2] = useState("");
   const [seg3, setSeg3] = useState("");
+  const [seg4, setSeg4] = useState("");
   const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
     const text1 = "Learn.";
     const text2 = " Train.";
-    const text3 = " Transform Your Lifestyle.";
+    const text3 = "Transform Your\u00A0Lifestyle.";
 
     let idx1 = 0;
     const timer1 = setInterval(() => {
@@ -50,7 +51,7 @@ function Hero() {
   return (
     <section className="relative pt-16 pb-6 overflow-hidden">
       <Container>
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
 
           {/* Badge */}
           <motion.div
@@ -68,13 +69,32 @@ function Hero() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="mt-6 text-4xl font-extrabold leading-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white tracking-tight min-h-[90px] sm:min-h-[120px] md:min-h-[150px]"
+            className="
+mt-6
+text-4xl
+font-extrabold
+leading-[1.1]
+tracking-tight
+text-slate-900
+dark:text-white
+sm:text-5xl
+md:text-[3.5rem]
+lg:text-[4rem]
+min-h-[110px]
+"
           >
             {seg1}
-            <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">{seg2}</span>
+            <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+              {seg2}
+            </span>
+
             <br />
+
             {seg3}
-            {isTyping && <span className="animate-pulse text-green-500 select-none">|</span>}
+            {isTyping && (
+              <span className="animate-pulse text-green-500 select-none">|</span>
+            )}
+
           </motion.h1>
 
           {/* Description */}
