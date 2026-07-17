@@ -91,46 +91,46 @@ function AdminDashboard() {
   };
 
   const fetchBlogs = async () => {
-  try {
-    const { data } = await API.get("/blogs");
-    setBlogs(data);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-useEffect(() => {
-  fetchBlogs();
-}, []);
-
-useEffect(() => {
-
-  const handleClickOutside = (event) => {
-
-    if (
-      categoryRef.current &&
-      !categoryRef.current.contains(event.target)
-    ) {
-
-      setShowCategories(false);
-
+    try {
+      const { data } = await API.get("/blogs");
+      setBlogs(data);
+    } catch (error) {
+      console.log(error);
     }
-
   };
 
-  document.addEventListener(
-    "mousedown",
-    handleClickOutside
-  );
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
 
-  return () =>
+  useEffect(() => {
 
-    document.removeEventListener(
+    const handleClickOutside = (event) => {
+
+      if (
+        categoryRef.current &&
+        !categoryRef.current.contains(event.target)
+      ) {
+
+        setShowCategories(false);
+
+      }
+
+    };
+
+    document.addEventListener(
       "mousedown",
       handleClickOutside
     );
 
-}, []);
+    return () =>
+
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+
+  }, []);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -164,49 +164,138 @@ useEffect(() => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.category) {
-  alert("Please select a category.");
-  return;
-}
-  setLoading(true);
-
-  console.log(formData);
-
-  try {
-    const data = new FormData();
-
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("content", formData.content);
-    data.append("category", formData.category);
-    data.append("author", formData.author);
-    data.append("readTime", formData.readTime);
-    data.append("expertTip", formData.expertTip);
-    data.append("takeaways", formData.takeaways);
-
-    if (image) {
-    data.append("image", image);
-}
-
-    if (editingId) {
-      await API.put(`/blogs/${editingId}`, data);
-    } else {
-      await API.post("/blogs", data);
+    if (!formData.category) {
+      alert("Please select a category.");
+      return;
     }
+    setLoading(true);
 
-    toast.success(
-  editingId
-    ? "Blog updated successfully!"
-    : "Blog published successfully!"
-);
+    console.log(formData);
 
-    fetchBlogs();
+    try {
+      const data = new FormData();
 
+      data.append("title", formData.title);
+      data.append("description", formData.description);
+      data.append("content", formData.content);
+      data.append("category", formData.category);
+      data.append("author", formData.author);
+      data.append("readTime", formData.readTime);
+      data.append("expertTip", formData.expertTip);
+      data.append("takeaways", formData.takeaways);
+
+      if (image) {
+        data.append("image", image);
+      }
+
+      if (editingId) {
+        await API.put(`/blogs/${editingId}`, data);
+      } else {
+        await API.post("/blogs", data);
+      }
+
+      toast.success(
+        editingId
+          ? "Blog updated successfully!"
+          : "Blog published successfully!"
+      );
+
+      fetchBlogs();
+
+      setEditingId(null);
+
+
+
+      setFormData({
+        title: "",
+        description: "",
+        category: "",
+        author: "",
+        readTime: "",
+        expertTip: "",
+        content: "",
+        takeaways: "",
+      });
+
+
+
+      setImage(null);
+      setPreview("");
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      setLoading(false);
+
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message ||
+        "Something went wrong."
+      );
+
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = (blog) => {
+    setBlogToDelete(blog);
+    setDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!blogToDelete) return;
+
+    try {
+      setLoading(true);
+
+      await API.delete(`/blogs/${blogToDelete._id}`);
+
+      setBlogs((prev) =>
+        prev.filter((blog) => blog._id !== blogToDelete._id)
+      );
+
+      toast.success("Blog deleted successfully!");
+
+      setDeleteModal(false);
+      setBlogToDelete(null);
+    } catch (error) {
+      console.log(error);
+      toast.error("Delete failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (blog) => {
+
+    setEditingId(blog._id);
+
+    setFormData({
+      title: blog.title,
+      description: blog.description,
+      category: blog.category,
+      author: blog.author,
+      readTime: blog.readTime,
+      expertTip: blog.expertTip,
+      content: blog.content,
+      takeaways: blog.takeaways.join("\n"),
+    });
+
+    setImage(null);
+    setPreview(blog.image);
+    // setPreview("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleCancelEdit = () => {
     setEditingId(null);
-
-    
 
     setFormData({
       title: "",
@@ -219,102 +308,13 @@ useEffect(() => {
       takeaways: "",
     });
 
-    
-
     setImage(null);
     setPreview("");
 
-        if (fileInputRef.current) {
+    if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-
-    setLoading(false);  
-
-  } catch (error) {
-    console.log(error);
-    toast.error(
-  error.response?.data?.message ||
-  "Something went wrong."
-);
-
-setLoading(false);
-  }
-};
-
-const handleDelete = (blog) => {
-  setBlogToDelete(blog);
-  setDeleteModal(true);
-};
-
-const confirmDelete = async () => {
-  if (!blogToDelete) return;
-
-  try {
-    setLoading(true);
-
-    await API.delete(`/blogs/${blogToDelete._id}`);
-
-    setBlogs((prev) =>
-      prev.filter((blog) => blog._id !== blogToDelete._id)
-    );
-
-    toast.success("Blog deleted successfully!");
-
-    setDeleteModal(false);
-    setBlogToDelete(null);
-  } catch (error) {
-    console.log(error);
-    toast.error("Delete failed.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handleEdit = (blog) => {
-
-  setEditingId(blog._id);
-
-  setFormData({
-    title: blog.title,
-    description: blog.description,
-    category: blog.category,
-    author: blog.author,
-    readTime: blog.readTime,
-    expertTip: blog.expertTip,
-    content: blog.content,
-    takeaways: blog.takeaways.join("\n"),
-  });
-
-  setImage(null);
-  setPreview(blog.image);
-  // setPreview("");
-
-    if (fileInputRef.current) {
-    fileInputRef.current.value = "";
-  }
-};
-
-const handleCancelEdit = () => {
-  setEditingId(null);
-
-  setFormData({
-    title: "",
-    description: "",
-    category: "",
-    author: "",
-    readTime: "",
-    expertTip: "",
-    content: "",
-    takeaways: "",
-  });
-
-  setImage(null);
-  setPreview("");
-
-  if (fileInputRef.current) {
-    fileInputRef.current.value = "";
-  }
-};
+  };
 
 
   const filteredBlogs = blogs.filter((blog) => {
@@ -330,274 +330,276 @@ const handleCancelEdit = () => {
     setTablePage(1);
   }, [search, selectedCatFilter]);
 
-    
+
 
   const totalBlogs = blogs.length;
 
-const totalCategories = new Set(
-  blogs.map((blog) => blog.category)
-).size;
+  const totalCategories = new Set(
+    blogs.map((blog) => blog.category)
+  ).size;
 
-const totalAuthors = new Set(blogs.map((blog) => blog.author)).size;
+  const totalAuthors = new Set(blogs.map((blog) => blog.author)).size;
 
-const totalImages = blogs.filter(
-  (blog) => blog.image
-).length;
+  const totalImages = blogs.filter(
+    (blog) => blog.image
+  ).length;
 
-const handleLogout = () => {
-  localStorage.removeItem("token");
+  const handleLogout = () => {
+    localStorage.removeItem("token");
 
-  toast.success("Logged out successfully!");
+    toast.success("Logged out successfully!");
 
-  navigate("/admin/login");
-};
+    navigate("/admin/login");
+  };
 
-const monthNames = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
-const monthlyCounts = new Array(12).fill(0);
+  const monthlyCounts = new Array(12).fill(0);
 
-blogs.forEach((blog) => {
-  const month = new Date(blog.createdAt).getMonth();
-  monthlyCounts[month]++;
-});
+  blogs.forEach((blog) => {
+    const month = new Date(blog.createdAt).getMonth();
+    monthlyCounts[month]++;
+  });
 
-const monthlyChart = {
-  series: [
-    {
-      name: "Blogs",
-      data: monthlyCounts,
-    },
-  ],
-
-  options: {
-    theme: {
-      mode: isDarkMode ? "dark" : "light",
-    },
-    chart: {
-      background: "transparent",
-      toolbar: {
-        show: false,
-      },
-      zoom: {
-        enabled: false,
-      },
-      height: 260,
-    },
-
-    legend: {
-      show: false,
-    },
-
-    colors: ["#22c55e"],
-
-    dataLabels: {
-      enabled: false,
-    },
-
-    stroke: {
-      curve: "smooth",
-      width: 3.5,
-    },
-
-    fill: {
-      type: "gradient",
-      gradient: {
-        shade: "green",
-        type: "vertical",
-        shadeIntensity: 0.5,
-        inverseColors: false,
-        opacityFrom: 0.45,
-        opacityTo: 0.05,
-        stops: [0, 90, 100]
-      }
-    },
-
-    grid: {
-      borderColor: isDarkMode ? "#1e293b" : "#f1f5f9",
-      strokeDashArray: 5,
-    },
-
-    xaxis: {
-      categories: monthNames,
-      labels: {
-        style: {
-          colors: isDarkMode ? "#94a3b8" : "#64748b",
-        }
-      },
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      }
-    },
-
-    yaxis: {
-      min: 0,
-      forceNiceScale: true,
-      labels: {
-        style: {
-          colors: isDarkMode ? "#94a3b8" : "#64748b",
-        }
-      }
-    },
-
-    tooltip: {
-      theme: isDarkMode ? "dark" : "light",
-    },
-  },
-};
-
-const categoryCounts = categories.map((category) => ({
-  label: category.value,
-  count: blogs.filter((blog) => blog.category === category.value).length,
-}));
-
-const pieChart = {
-  series: categoryCounts.map((item) => item.count),
-
-  options: {
-    theme: {
-      mode: isDarkMode ? "dark" : "light",
-    },
-    chart: {
-      background: "transparent",
-      type: "donut",
-      toolbar: {
-        show: false,
-      },
-    },
-
-    colors: ["#10b981", "#059669", "#0d9488", "#0f766e", "#115e59"],
-
-    labels: categoryCounts.map((item) => item.label),
-
-    legend: {
-      position: "bottom",
-      fontSize: "13px",
-      labels: {
-        colors: isDarkMode ? "#94a3b8" : "#64748b",
-      }
-    },
-
-    dataLabels: {
-      enabled: false,
-    },
-
-    plotOptions: {
-      pie: {
-        donut: {
-          size: "70%",
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: "Total Blogs",
-              color: isDarkMode ? "#f1f5f9" : "#0f172a",
-              formatter: () => totalBlogs,
-            }
-          }
-        },
-      },
-    },
-
-    stroke: {
-      colors: isDarkMode ? ["#0d1320"] : ["#fff"],
-      width: 2,
-    },
-
-    responsive: [
+  const monthlyChart = {
+    series: [
       {
-        breakpoint: 768,
-        options: {
-          chart: {
-            width: "100%",
-          },
-          legend: {
-            position: "bottom",
-          },
-        },
+        name: "Blogs",
+        data: monthlyCounts,
       },
     ],
-  },
-};
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    options: {
+      theme: {
+        mode: isDarkMode ? "dark" : "light",
+      },
+      chart: {
+        background: "transparent",
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+        height: 260,
+      },
+
+      legend: {
+        show: false,
+      },
+
+      colors: ["#22c55e"],
+
+      dataLabels: {
+        enabled: false,
+      },
+
+      stroke: {
+        curve: "smooth",
+        width: 3.5,
+      },
+
+      fill: {
+        type: "gradient",
+        gradient: {
+          shade: "green",
+          type: "vertical",
+          shadeIntensity: 0.5,
+          inverseColors: false,
+          opacityFrom: 0.45,
+          opacityTo: 0.05,
+          stops: [0, 90, 100]
+        }
+      },
+
+      grid: {
+        borderColor: isDarkMode ? "#1e293b" : "#f1f5f9",
+        strokeDashArray: 5,
+      },
+
+      xaxis: {
+        categories: monthNames,
+        labels: {
+          style: {
+            colors: isDarkMode ? "#94a3b8" : "#64748b",
+          }
+        },
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
+      },
+
+      yaxis: {
+        min: 0,
+        forceNiceScale: true,
+        labels: {
+          style: {
+            colors: isDarkMode ? "#94a3b8" : "#64748b",
+          }
+        }
+      },
+
+      tooltip: {
+        theme: isDarkMode ? "dark" : "light",
+      },
+    },
+  };
+
+  const categoryCounts = categories.map((category) => ({
+    label: category.value,
+    count: blogs.filter((blog) => blog.category === category.value).length,
+  }));
+
+  const pieChart = {
+    series: categoryCounts.map((item) => item.count),
+
+    options: {
+      theme: {
+        mode: isDarkMode ? "dark" : "light",
+      },
+      chart: {
+        background: "transparent",
+        type: "donut",
+        toolbar: {
+          show: false,
+        },
+      },
+
+      colors: ["#10b981", "#059669", "#0d9488", "#0f766e", "#115e59"],
+
+      labels: categoryCounts.map((item) => item.label),
+
+      legend: {
+        position: "bottom",
+        fontSize: "13px",
+        labels: {
+          colors: isDarkMode ? "#94a3b8" : "#64748b",
+        }
+      },
+
+      dataLabels: {
+        enabled: false,
+      },
+
+      plotOptions: {
+        pie: {
+          donut: {
+            size: "70%",
+            labels: {
+              show: true,
+              total: {
+                show: true,
+                label: "Total Blogs",
+                color: isDarkMode ? "#f1f5f9" : "#0f172a",
+                formatter: () => totalBlogs,
+              }
+            }
+          },
+        },
+      },
+
+      stroke: {
+        colors: isDarkMode ? ["#0d1320"] : ["#fff"],
+        width: 2,
+      },
+
+      responsive: [
+        {
+          breakpoint: 768,
+          options: {
+            chart: {
+              width: "100%",
+            },
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      ],
+    },
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
 
-  <div className="min-h-screen bg-slate-100 py-6 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+    <div className="min-h-screen bg-slate-100 py-6 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
 
-    <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
-      {/* Premium Header */}
+        {/* Premium Header */}
 
-      <div className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 p-6 shadow-xl">
+        <div className="relative mb-6 overflow-hidden rounded-3xl bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 p-6 shadow-xl">
 
-        {/* Decorations */}
+          {/* Decorations */}
 
-        <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10"></div>
+          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/10"></div>
 
-        <div className="absolute -bottom-10 left-1/2 h-32 w-32 rounded-full bg-white/5"></div>
+          <div className="absolute -bottom-10 left-1/2 h-32 w-32 rounded-full bg-white/5"></div>
 
-        <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
+          <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row lg:items-center">
 
-          <div>
+            <div>
 
-            <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
-              🏋️ Fitness Blog CMS
-            </span>
+              <span className="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                🏋️ Fitness Blog CMS
+              </span>
 
-            <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white">
-              Content Manager
-            </h1>
+              <h1 className="mt-3 text-4xl font-extrabold tracking-tight text-white">
+                Content Manager
+              </h1>
 
-            <p className="mt-2 max-w-xl text-sm leading-6 text-green-100">
-              Create, edit and manage premium fitness articles with a modern
-              content dashboard.
-            </p>
-
-          </div>
-
-          <div className="flex gap-3">
-
-            <div className="rounded-2xl bg-white/15 px-5 py-3 text-center backdrop-blur">
-
-              <p className="text-xs uppercase tracking-wide text-green-100">
-                Blogs
+              <p className="mt-2 max-w-xl text-sm leading-6 text-green-100">
+                Create, edit and manage premium fitness articles with a modern
+                content dashboard.
               </p>
-
-              <h2 className="text-2xl font-bold text-white">
-                {totalBlogs}
-              </h2>
 
             </div>
 
-            <div className="rounded-2xl bg-white/15 px-5 py-3 text-center backdrop-blur">
+            <div className="flex gap-3">
 
-              <p className="text-xs uppercase tracking-wide text-green-100">
-                Categories
-              </p>
+              <div className="rounded-2xl bg-white/15 px-5 py-3 text-center backdrop-blur">
 
-              <h2 className="text-2xl font-bold text-white">
-                {totalCategories}
-              </h2>
+                <p className="text-xs uppercase tracking-wide text-green-100">
+                  Blogs
+                </p>
+
+                <h2 className="text-2xl font-bold text-white">
+                  {totalBlogs}
+                </h2>
+
+              </div>
+
+              <div className="rounded-2xl bg-white/15 px-5 py-3 text-center backdrop-blur">
+
+                <p className="text-xs uppercase tracking-wide text-green-100">
+                  Categories
+                </p>
+
+                <h2 className="text-2xl font-bold text-white">
+                  {totalCategories}
+                </h2>
+
+              </div>
 
             </div>
 
@@ -605,223 +607,220 @@ const pieChart = {
 
         </div>
 
-      </div>
-
-{/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-<div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
 
-  {/* ================= Monthly Chart ================= */}
+          {/* ================= Monthly Chart ================= */}
 
-  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
+          <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
 
-    <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
 
-      <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3">
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-950/40">
-          📈
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-950/40">
+                  📈
+                </div>
+
+                <div>
+
+                  <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                    Monthly Publishing
+                  </h2>
+
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Blogs published this year
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 text-center text-white shadow">
+
+                <p className="text-xs uppercase opacity-80">
+                  Blogs
+                </p>
+
+                <h3 className="text-xl font-bold">
+                  {totalBlogs}
+                </h3>
+
+              </div>
+
+            </div>
+
+            <Chart
+              options={monthlyChart.options}
+              series={monthlyChart.series}
+              type="area"
+              height={240}
+            />
+
+          </div>
+
+          {/* ================= Category Chart ================= */}
+
+          <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
+
+            <div className="mb-4 flex items-center justify-between">
+
+              <div className="flex items-center gap-3">
+
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-950/40">
+                  🥧
+                </div>
+
+                <div>
+
+                  <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                    Category Distribution
+                  </h2>
+
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Content breakdown
+                  </p>
+
+                </div>
+
+              </div>
+
+              <div className="rounded-2xl bg-slate-100 px-4 py-2 text-center dark:bg-slate-900">
+
+                <p className="text-xs uppercase text-slate-500 dark:text-slate-400">
+                  Categories
+                </p>
+
+                <h3 className="text-xl font-bold text-green-600 dark:text-green-400">
+                  {totalCategories}
+                </h3>
+
+              </div>
+
+            </div>
+
+            <div className="flex justify-center">
+
+              <Chart
+                options={pieChart.options}
+                series={pieChart.series}
+                type="donut"
+                height={240}
+              />
+
+            </div>
+
+          </div>
+
         </div>
-
-        <div>
-
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-            Monthly Publishing
-          </h2>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Blogs published this year
-          </p>
-
-        </div>
-
-      </div>
-
-      <div className="rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 text-center text-white shadow">
-
-        <p className="text-xs uppercase opacity-80">
-          Blogs
-        </p>
-
-        <h3 className="text-xl font-bold">
-          {totalBlogs}
-        </h3>
-
-      </div>
-
-    </div>
-
-    <Chart
-      options={monthlyChart.options}
-      series={monthlyChart.series}
-      type="area"
-      height={240}
-    />
-
-  </div>
-
-  {/* ================= Category Chart ================= */}
-
-  <div className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-slate-800 dark:bg-slate-950">
-
-    <div className="mb-4 flex items-center justify-between">
-
-      <div className="flex items-center gap-3">
-
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-950/40">
-          🥧
-        </div>
-
-        <div>
-
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
-            Category Distribution
-          </h2>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Content breakdown
-          </p>
-
-        </div>
-
-      </div>
-
-      <div className="rounded-2xl bg-slate-100 px-4 py-2 text-center dark:bg-slate-900">
-
-        <p className="text-xs uppercase text-slate-500 dark:text-slate-400">
-          Categories
-        </p>
-
-        <h3 className="text-xl font-bold text-green-600 dark:text-green-400">
-          {totalCategories}
-        </h3>
-
-      </div>
-
-    </div>
-
-    <div className="flex justify-center">
-
-      <Chart
-        options={pieChart.options}
-        series={pieChart.series}
-        type="donut"
-        height={240}
-      />
-
-    </div>
-
-  </div>
-
-</div>
-{/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-<div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
+        <div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
 
-<div className="mb-8 flex items-center gap-4">
+          <div className="mb-8 flex items-center gap-4">
 
-<div className="rounded-2xl bg-green-100 p-4 dark:bg-green-950/40">
+            <div className="rounded-2xl bg-green-100 p-4 dark:bg-green-950/40">
 
-<FaIcons.FaPenNib className="text-2xl text-green-600 dark:text-green-400"/>
+              <FaIcons.FaPenNib className="text-2xl text-green-600 dark:text-green-400" />
 
-</div>
+            </div>
 
-<div>
+            <div>
 
-<h2 className="text-3xl font-bold text-slate-800 dark:text-white">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
 
-{editingId ? "Update Blog" : "Create Blog"}
+                {editingId ? "Update Blog" : "Create Blog"}
 
-</h2>
+              </h2>
 
-<p className="text-slate-500 dark:text-slate-400">
+              <p className="text-slate-500 dark:text-slate-400">
 
-Fill all required information before publishing.
+                Fill all required information before publishing.
 
-</p>
+              </p>
 
-</div>
+            </div>
 
-<button
+            {/* <button
       onClick={handleLogout}
       className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-950/30 dark:bg-red-950/20"
     >
       <FaIcons.FaSignOutAlt />
       Logout
-    </button>
+    </button> */}
 
-</div>
+          </div>
 
-<form
-onSubmit={handleSubmit}
-className="space-y-6"
->
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-6"
+          >
 
-<div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-6 md:grid-cols-2">
 
-<input
-type="text"
-name="title"
-placeholder="Blog Title"
-value={formData.title}
-onChange={handleChange}
-disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
-/>
+              <input
+                type="text"
+                name="title"
+                placeholder="Blog Title"
+                value={formData.title}
+                onChange={handleChange}
+                disabled={loading}
+                className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
+              />
 
-<div
-  ref={categoryRef}
-  className="relative"
->
+              <div
+                ref={categoryRef}
+                className="relative"
+              >
 
-  <button
-    type="button"
-    disabled={loading}
-    onClick={() => setShowCategories(!showCategories)}
-    className="flex w-full items-center justify-between rounded-2xl border border-slate-300 bg-slate-50 px-5 py-4 shadow-sm transition-all duration-300 hover:border-green-400 hover:bg-white hover:shadow-lg focus:ring-4 focus:ring-green-100"
-  >
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => setShowCategories(!showCategories)}
+                  className="flex w-full items-center justify-between rounded-2xl border border-slate-300 bg-slate-50 px-5 py-4 shadow-sm transition-all duration-300 hover:border-green-400 hover:bg-white hover:shadow-lg focus:ring-4 focus:ring-green-100"
+                >
 
-    <span
-      className={
-        formData.category
-          ? "font-medium text-slate-800"
-          : "text-slate-400"
-      }
-    >
+                  <span
+                    className={
+                      formData.category
+                        ? "font-medium text-slate-800"
+                        : "text-slate-400"
+                    }
+                  >
 
-      {formData.category
-        ? categories.find(
-            (item) => item.value === formData.category
-          )?.icon +
-          " " +
-          formData.category
-        : "📂 Select Category"}
+                    {formData.category
+                      ? categories.find(
+                        (item) => item.value === formData.category
+                      )?.icon +
+                      " " +
+                      formData.category
+                      : "📂 Select Category"}
 
-    </span>
+                  </span>
 
-    <span
-      className={`text-xl text-green-600 transition duration-300 ${
-        showCategories ? "rotate-180" : ""
-      }`}
-    >
-      ▼
-    </span>
+                  <span
+                    className={`text-xl text-green-600 transition duration-300 ${showCategories ? "rotate-180" : ""
+                      }`}
+                  >
+                    ▼
+                  </span>
 
-  </button>
+                </button>
 
-  {showCategories && (
+                {showCategories && (
 
-    <div
-      className="
+                  <div
+                    className="
         absolute
         z-50
         mt-3
@@ -839,651 +838,674 @@ className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition d
         dark:border-slate-800
         dark:bg-slate-950
       "
-    >
+                  >
 
-      {/* Search */}
+                    {/* Search */}
 
-      <div className="border-b p-3">
+                    <div className="border-b p-3">
 
-        <input
-          type="text"
-          placeholder="🔍 Search category..."
-          value={categorySearch}
-          onChange={(e) =>
-            setCategorySearch(e.target.value)
-          }
-          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-        />
+                      <input
+                        type="text"
+                        placeholder="🔍 Search category..."
+                        value={categorySearch}
+                        onChange={(e) =>
+                          setCategorySearch(e.target.value)
+                        }
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-2 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                      />
 
-      </div>
+                    </div>
 
-      {/* Scrollable list */}
+                    {/* Scrollable list */}
 
-      <div className="max-h-72 overflow-y-auto">
+                    <div className="max-h-72 overflow-y-auto">
 
-        {filteredCategories.map((category) => (
+                      {filteredCategories.map((category) => (
 
-          <button
-            key={category.value}
-            type="button"
-            onClick={() => {
+                        <button
+                          key={category.value}
+                          type="button"
+                          onClick={() => {
 
-              setFormData({
-                ...formData,
-                category: category.value,
-              });
+                            setFormData({
+                              ...formData,
+                              category: category.value,
+                            });
 
-              setCategorySearch("");
+                            setCategorySearch("");
 
-              setShowCategories(false);
+                            setShowCategories(false);
 
-            }}
-            className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-green-50 dark:hover:bg-slate-900 dark:text-slate-100"
-          >
+                          }}
+                          className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-green-50 dark:hover:bg-slate-900 dark:text-slate-100"
+                        >
 
-            <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3">
 
-              <span className="text-2xl">
-                {category.icon}
-              </span>
+                            <span className="text-2xl">
+                              {category.icon}
+                            </span>
 
-              <span className="font-medium">
-                {category.value}
-              </span>
+                            <span className="font-medium">
+                              {category.value}
+                            </span>
+
+                          </div>
+
+                          {formData.category === category.value && (
+
+                            <span className="text-xl text-green-600">
+
+                              ✓
+
+                            </span>
+
+                          )}
+
+                        </button>
+
+                      ))}
+
+                      {filteredCategories.length === 0 && (
+
+                        <div className="py-8 text-center text-slate-400">
+
+                          No category found
+
+                        </div>
+
+                      )}
+
+                    </div>
+
+                  </div>
+
+                )}
+
+              </div>
+
+              <input
+                type="text"
+                name="author"
+                placeholder="Author"
+                value={formData.author}
+                onChange={handleChange}
+                disabled={loading}
+                className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
+              />
+
+              <input
+                type="text"
+                name="readTime"
+                placeholder="Read Time"
+                value={formData.readTime}
+                onChange={handleChange}
+                disabled={loading}
+                className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
+              />
 
             </div>
 
-            {formData.category === category.value && (
+            <textarea
+              rows={3}
+              name="description"
+              placeholder="Short Description"
+              value={formData.description}
+              onChange={handleChange}
+              disabled={loading}
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
+            />
 
-              <span className="text-xl text-green-600">
+            <div>
 
-                ✓
+              <label className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
+                Blog Content
+              </label>
 
-              </span>
+              <RichTextEditor
+                value={formData.content}
+                onChange={(html) =>
+                  setFormData({
+                    ...formData,
+                    content: html,
+                  })
+                }
+              />
 
-            )}
+            </div>
 
-          </button>
+            <div className="grid gap-6 md:grid-cols-2">
 
-        ))}
+              <textarea
+                rows={4}
+                name="expertTip"
+                placeholder="Expert Tip"
+                value={formData.expertTip}
+                onChange={handleChange}
+                disabled={loading}
+                className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
+              />
 
-        {filteredCategories.length === 0 && (
+              <textarea
+                rows={4}
+                name="takeaways"
+                placeholder="Takeaways (one per line)"
+                value={formData.takeaways}
+                onChange={handleChange}
+                disabled={loading}
+                className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
+              />
 
-          <div className="py-8 text-center text-slate-400">
+            </div>
 
-            No category found
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 py-10 transition duration-300 hover:border-green-500 hover:bg-green-50">
+
+              <FaIcons.FaCloudUploadAlt className="mb-4 text-5xl text-green-500" />
+
+              <p className="font-semibold">
+
+                Click to Upload Cover Image
+
+              </p>
+
+              <p className="mt-1 text-sm text-slate-500">
+
+                PNG • JPG • WEBP
+
+              </p>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                accept="image/*"
+                disabled={loading}
+                onChange={handleImageChange}
+              />
+
+            </label>
+
+            {
+              preview && (
+
+                <div className="rounded-2xl border bg-green-50 p-6">
+
+                  <h3 className="mb-4 text-lg font-bold">
+                    Image Preview
+                  </h3>
+
+                  <div className="flex justify-center">
+
+                    {preview && (
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="h-56 w-96 rounded-2xl border-4 border-white object-cover shadow-xl"
+                      />
+                    )}
+
+                  </div>
+
+                  <div className="flex items-center justify-between">
+
+                    <div>
+
+                      <p className="font-semibold">
+                        {image?.name}
+                      </p>
+
+                      <p className="text-sm text-slate-500">
+                        {(image?.size / 1024).toFixed(1)} KB
+                      </p>
+
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImage(null);
+                        setPreview("");
+
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      }}
+                      className="rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
+                    >
+                      Remove
+                    </button>
+
+                  </div>
+
+                </div>
+
+              )
+            }
+
+            <div className="flex gap-4">
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`flex-1 rounded-2xl py-4 text-lg font-bold text-white shadow-xl transition duration-300
+    ${editingId
+                    ? "bg-yellow-500 hover:bg-yellow-600"
+                    : "bg-green-600 hover:bg-green-700"
+                  }
+    ${loading
+                    ? "cursor-not-allowed opacity-70"
+                    : "hover:scale-[1.02]"
+                  }`}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <FaIcons.FaSpinner className="animate-spin" />
+                    <span>
+                      {editingId
+                        ? "Updating Blog..."
+                        : "Publishing Blog..."}
+                    </span>
+                  </div>
+                ) : (
+                  editingId
+                    ? "Update Blog"
+                    : "Publish Blog"
+                )}
+              </button>
+
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                  className="rounded-2xl border border-slate-300 bg-white px-8 font-semibold text-slate-700 shadow transition duration-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+              )}
+
+            </div>
+
+          </form>
+
+        </div>
+
+        {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
+
+
+        <hr className="my-14" />
+
+        <div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
+
+          <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+
+            <div>
+
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
+                Blog Management
+              </h2>
+
+              <p className="mt-1 text-slate-500 dark:text-slate-400">
+                Manage, edit and organize your published blogs.
+              </p>
+
+            </div>
+
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+
+              <input
+                type="text"
+                placeholder="Search blog..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full sm:w-72 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
+              />
+
+              <select
+                value={selectedCatFilter}
+                onChange={(e) => setSelectedCatFilter(e.target.value)}
+                className="w-full sm:w-48 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-955"
+              >
+                <option value="All">All Categories</option>
+                <option value="Workout">Workout</option>
+                <option value="Nutrition">Nutrition</option>
+                <option value="Recovery">Recovery</option>
+                <option value="Health">Health</option>
+                <option value="Lifestyle">Lifestyle</option>
+              </select>
+
+              <div className="flex justify-center rounded-xl bg-green-100 px-5 py-3 font-bold text-green-700">
+
+                {filteredBlogs.length} Blogs
+
+              </div>
+
+            </div>
 
           </div>
 
-        )}
+          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+
+            <table className="min-w-[950px] w-full">
+
+              <thead className="bg-slate-800 text-white dark:bg-slate-950">
+
+                <tr>
+
+                  <th className="p-5 text-left">
+
+                    Image
+
+                  </th>
+
+                  <th className="p-5 text-left">
+
+                    Title
+
+                  </th>
+
+                  <th className="p-5 text-left">
+
+                    Category
+
+                  </th>
+
+                  <th className="p-5 text-left">
+
+                    Author
+
+                  </th>
+
+                  <th className="p-5 text-left">
+
+                    Status
+
+                  </th>
+
+                  <th className="p-5 text-center">
+
+                    Actions
+
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {currentTableBlogs.map((blog) => (
+
+                  <tr
+                    key={blog._id}
+                    className="border-b transition duration-300 hover:bg-green-50 dark:border-slate-850 dark:hover:bg-slate-900/40"
+                  >
+
+                    <td className="p-4">
+
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        className="h-20 w-28 rounded-xl object-cover shadow"
+                      />
+
+                    </td>
+
+                    <td className="p-4">
+
+                      <h3 className="font-bold text-slate-800 dark:text-white">
+
+                        {blog.title}
+
+                      </h3>
+
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+
+                        {blog.readTime}
+
+                      </p>
+
+                    </td>
+
+                    <td className="p-4">
+
+                      <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-400">
+
+                        {blog.category}
+
+                      </span>
+
+                    </td>
+
+                    <td className="p-4">
+
+                      <div className="flex items-center gap-3">
+
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-600 font-bold text-white">
+
+                          {blog.author.charAt(0).toUpperCase()}
+
+                        </div>
+
+                        <div>
+
+                          <p className="font-semibold text-slate-850 dark:text-slate-200">
+
+                            {blog.author}
+
+                          </p>
+
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+
+                            Author
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </td>
+
+                    <td className="p-4">
+
+                      <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
+
+                        Published
+
+                      </span>
+
+                    </td>
+
+                    <td className="p-4">
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          onClick={() => handleEdit(blog)}
+                          className="
+        w-24
+        rounded-xl
+        bg-amber-400
+        py-2.5
+        text-sm
+        font-semibold
+        text-white
+        shadow-sm
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-amber-500
+        hover:shadow-lg
+        active:scale-95
+      "
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(blog)}
+                          className="
+        w-24
+        rounded-xl
+        bg-red-500
+        py-2.5
+        text-sm
+        font-semibold
+        text-white
+        shadow-sm
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-red-600
+        hover:shadow-lg
+        active:scale-95
+      "
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+
+                  </tr>
+
+                ))}
+
+              </tbody>
+
+            </table>
+
+            {
+              filteredBlogs.length === 0 && (
+                <div className="py-16 text-center">
+                  <h3 className="text-2xl font-bold">
+                    No Blogs Found
+                  </h3>
+
+                  <p className="mt-2 text-slate-500">
+                    Try another keyword.
+                  </p>
+                </div>
+              )
+            }
+
+          </div>
+
+          {/* Table Pagination Controls */}
+          {totalTablePages > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setTablePage(prev => Math.max(prev - 1, 1))}
+                disabled={tablePage === 1}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+              >
+                ◀
+              </button>
+
+              {Array.from({ length: totalTablePages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => setTablePage(page)}
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold transition ${tablePage === page
+                    ? "bg-green-600 text-white shadow-lg shadow-green-500/20"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-green-500 hover:text-green-600"
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => setTablePage(prev => Math.min(prev + 1, totalTablePages))}
+                disabled={tablePage === totalTablePages}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
+              >
+                ▶
+              </button>
+            </div>
+          )}
+
+        </div>
 
       </div>
 
-    </div>
-
-    )}
-
-</div>
-
-<input
-type="text"
-name="author"
-placeholder="Author"
-value={formData.author}
-onChange={handleChange}
-disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
-/>
-
-<input
-type="text"
-name="readTime"
-placeholder="Read Time"
-value={formData.readTime}
-onChange={handleChange}
-disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
-/>
-
-</div>
-
-<textarea
-rows={3}
-name="description"
-placeholder="Short Description"
-value={formData.description}
-onChange={handleChange}
-disabled={loading}
-className="w-full rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
-/>
-
-<div>
-
-  <label className="mb-2 block font-semibold text-slate-700 dark:text-slate-200">
-    Blog Content
-  </label>
-
-  <RichTextEditor
-    value={formData.content}
-    onChange={(html) =>
-      setFormData({
-        ...formData,
-        content: html,
-      })
-    }
-  />
-
-</div>
-
-<div className="grid gap-6 md:grid-cols-2">
-
-<textarea
-rows={4}
-name="expertTip"
-placeholder="Expert Tip"
-value={formData.expertTip}
-onChange={handleChange}
-disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
-/>
-
-<textarea
-rows={4}
-name="takeaways"
-placeholder="Takeaways (one per line)"
-value={formData.takeaways}
-onChange={handleChange}
-disabled={loading}
-className="rounded-xl border border-slate-300 bg-slate-50 p-4 transition duration-300 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
-/>
-
-</div>
-
-<label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 py-10 transition duration-300 hover:border-green-500 hover:bg-green-50">
-
-<FaIcons.FaCloudUploadAlt className="mb-4 text-5xl text-green-500"/>
-
-<p className="font-semibold">
-
-Click to Upload Cover Image
-
-</p>
-
-<p className="mt-1 text-sm text-slate-500">
-
-PNG • JPG • WEBP
-
-</p>
-
-<input
-  ref={fileInputRef}
-  type="file"
-  className="hidden"
-  accept="image/*"
-  disabled={loading}
-  onChange={handleImageChange}
-/>
-
-</label>
-
-{
-preview && (
-
-<div className="rounded-2xl border bg-green-50 p-6">
-
-<h3 className="mb-4 text-lg font-bold">
-Image Preview
-</h3>
-
-<div className="flex justify-center">
-
-{preview && (
-  <img
-    src={preview}
-    alt="Preview"
-    className="h-56 w-96 rounded-2xl border-4 border-white object-cover shadow-xl"
-  />
-)}
-
-</div>
-
-<div className="flex items-center justify-between">
-
-<div>
-
-<p className="font-semibold">
-{image?.name}
-</p>
-
-<p className="text-sm text-slate-500">
-{(image?.size / 1024).toFixed(1)} KB
-</p>
-
-</div>
-
-<button
-  type="button"
-  onClick={() => {
-    setImage(null);
-    setPreview("");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }}
-  className="rounded-lg bg-red-500 px-4 py-2 text-white transition hover:bg-red-600"
->
-Remove
-</button>
-
-</div>
-
-</div>
-
-)
-}
-
-<div className="flex gap-4">
-
-  <button
-    type="submit"
-    disabled={loading}
-    className={`flex-1 rounded-2xl py-4 text-lg font-bold text-white shadow-xl transition duration-300
-    ${
-      editingId
-        ? "bg-yellow-500 hover:bg-yellow-600"
-        : "bg-green-600 hover:bg-green-700"
-    }
-    ${
-      loading
-        ? "cursor-not-allowed opacity-70"
-        : "hover:scale-[1.02]"
-    }`}
-  >
-    {loading ? (
-      <div className="flex items-center justify-center gap-3">
-        <FaIcons.FaSpinner className="animate-spin" />
-        <span>
-          {editingId
-            ? "Updating Blog..."
-            : "Publishing Blog..."}
-        </span>
-      </div>
-    ) : (
-      editingId
-        ? "Update Blog"
-        : "Publish Blog"
-    )}
-  </button>
-
-  {editingId && (
-    <button
-      type="button"
-      onClick={handleCancelEdit}
-      disabled={loading}
-      className="rounded-2xl border border-slate-300 bg-white px-8 font-semibold text-slate-700 shadow transition duration-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      Cancel
-    </button>
-  )}
-
-</div>
-
-</form>
-
-</div>
-
-{/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
+      {deleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
 
+          <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl animate-[fadeIn_.25s_ease]">
 
-<hr className="my-14" />
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
 
-<div className="rounded-3xl bg-white p-8 shadow-2xl dark:bg-slate-955 dark:border dark:border-slate-800">
+              <span className="text-5xl">🗑️</span>
 
-<div className="mb-8 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            </div>
 
-    <div>
+            <h2 className="text-center text-3xl font-bold text-slate-800">
+              Delete Blog?
+            </h2>
 
-      <h2 className="text-3xl font-bold text-slate-800 dark:text-white">
-        Blog Management
-      </h2>
+            <p className="mt-4 text-center text-slate-500">
 
-      <p className="mt-1 text-slate-500 dark:text-slate-400">
-        Manage, edit and organize your published blogs.
-      </p>
+              You're about to permanently delete
+
+            </p>
+
+            <p className="mt-2 text-center font-semibold text-slate-800">
+
+              "{blogToDelete?.title}"
+
+            </p>
+
+            <p className="mt-2 text-center text-sm text-red-500">
+
+              This action cannot be undone.
+
+            </p>
+
+            <div className="mt-8 flex gap-4">
+
+              <button
+                onClick={() => {
+                  setDeleteModal(false);
+                  setBlogToDelete(null);
+                }}
+                className="flex-1 rounded-xl border border-slate-300 py-3 font-semibold transition hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                disabled={loading}
+                onClick={confirmDelete}
+                className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
 
     </div>
 
-<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-
-<input
-type="text"
-placeholder="Search blog..."
-value={search}
-onChange={(e) => setSearch(e.target.value)}
-className="w-full sm:w-72 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-955"
-/>
-
-<select
-value={selectedCatFilter}
-onChange={(e) => setSelectedCatFilter(e.target.value)}
-className="w-full sm:w-48 rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 outline-none transition focus:border-green-500 focus:ring-4 focus:ring-green-100 font-semibold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-955"
->
-  <option value="All">All Categories</option>
-  <option value="Workout">Workout</option>
-  <option value="Nutrition">Nutrition</option>
-  <option value="Recovery">Recovery</option>
-  <option value="Health">Health</option>
-  <option value="Lifestyle">Lifestyle</option>
-</select>
-
-<div className="flex justify-center rounded-xl bg-green-100 px-5 py-3 font-bold text-green-700">
-
-{filteredBlogs.length} Blogs
-
-</div>
-
-</div>
-
-</div>
-
-<div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
-
-<table className="min-w-[950px] w-full">
-
-<thead className="bg-slate-800 text-white dark:bg-slate-950">
-
-<tr>
-
-<th className="p-5 text-left">
-
-Image
-
-</th>
-
-<th className="p-5 text-left">
-
-Title
-
-</th>
-
-<th className="p-5 text-left">
-
-Category
-
-</th>
-
-<th className="p-5 text-left">
-
-Author
-
-</th>
-
-<th className="p-5 text-left">
-
-Status
-
-</th>
-
-<th className="p-5 text-center">
-
-Actions
-
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{currentTableBlogs.map((blog) => (
-
-<tr
-key={blog._id}
-className="border-b transition duration-300 hover:bg-green-50 dark:border-slate-850 dark:hover:bg-slate-900/40"
->
-
-<td className="p-4">
-
-<img
-src={blog.image}
-alt={blog.title}
-className="h-20 w-28 rounded-xl object-cover shadow"
-/>
-
-</td>
-
-<td className="p-4">
-
-<h3 className="font-bold text-slate-800 dark:text-white">
-
-{blog.title}
-
-</h3>
-
-<p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-
-{blog.readTime}
-
-</p>
-
-</td>
-
-<td className="p-4">
-
-<span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-400">
-
-{blog.category}
-
-</span>
-
-</td>
-
-<td className="p-4">
-
-<div className="flex items-center gap-3">
-
-<div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-600 font-bold text-white">
-
-{blog.author.charAt(0).toUpperCase()}
-
-</div>
-
-<div>
-
-<p className="font-semibold text-slate-850 dark:text-slate-200">
-
-{blog.author}
-
-</p>
-
-<p className="text-xs text-slate-500 dark:text-slate-400">
-
-Author
-
-</p>
-
-</div>
-
-</div>
-
-</td>
-
-<td className="p-4">
-
-<span className="rounded-full bg-green-100 px-4 py-2 text-sm font-semibold text-green-700 dark:bg-green-950 dark:text-green-400">
-
-Published
-
-</span>
-
-</td>
-
-<td className="space-x-3 p-4 text-center">
-
-<button
-onClick={() => handleEdit(blog)}
-className="rounded-xl bg-yellow-400 px-3 py-2 text-sm font-semibold text-white transition hover:scale-105 hover:bg-yellow-500 sm:px-5"
->
-
-Edit
-
-</button>
-
-<button
-onClick={() => handleDelete(blog)}
-className="rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white transition hover:scale-105 hover:bg-red-600 sm:px-5"
->
-
-Delete
-
-</button>
-
-</td>
-
-</tr>
-
-))}
-
-</tbody>
-
-</table>
-
-{
-  filteredBlogs.length === 0 && (
-    <div className="py-16 text-center">
-      <h3 className="text-2xl font-bold">
-        No Blogs Found
-      </h3>
-
-      <p className="mt-2 text-slate-500">
-        Try another keyword.
-      </p>
-    </div>
-  )
-}
-
-</div>   
-
-{/* Table Pagination Controls */}
-{totalTablePages > 1 && (
-  <div className="mt-8 flex items-center justify-center gap-2">
-    <button
-      type="button"
-      onClick={() => setTablePage(prev => Math.max(prev - 1, 1))}
-      disabled={tablePage === 1}
-      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
-    >
-      ◀
-    </button>
-
-    {Array.from({ length: totalTablePages }, (_, i) => i + 1).map((page) => (
-      <button
-        key={page}
-        type="button"
-        onClick={() => setTablePage(page)}
-        className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold transition ${
-          tablePage === page
-            ? "bg-green-600 text-white shadow-lg shadow-green-500/20"
-            : "border border-slate-200 bg-white text-slate-600 hover:border-green-500 hover:text-green-600"
-        }`}
-      >
-        {page}
-      </button>
-    ))}
-
-    <button
-      type="button"
-      onClick={() => setTablePage(prev => Math.min(prev + 1, totalTablePages))}
-      disabled={tablePage === totalTablePages}
-      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-green-500 hover:text-green-600 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:text-slate-600"
-    >
-      ▶
-    </button>
-  </div>
-)}
-
-</div>   
-
-</div>   
-
-{/* ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-{deleteModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-
-    <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl animate-[fadeIn_.25s_ease]">
-
-      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-
-        <span className="text-5xl">🗑️</span>
-
-      </div>
-
-      <h2 className="text-center text-3xl font-bold text-slate-800">
-        Delete Blog?
-      </h2>
-
-      <p className="mt-4 text-center text-slate-500">
-
-        You're about to permanently delete
-
-      </p>
-
-      <p className="mt-2 text-center font-semibold text-slate-800">
-
-        "{blogToDelete?.title}"
-
-      </p>
-
-      <p className="mt-2 text-center text-sm text-red-500">
-
-        This action cannot be undone.
-
-      </p>
-
-      <div className="mt-8 flex gap-4">
-
-        <button
-          onClick={() => {
-            setDeleteModal(false);
-            setBlogToDelete(null);
-          }}
-          className="flex-1 rounded-xl border border-slate-300 py-3 font-semibold transition hover:bg-slate-100"
-        >
-          Cancel
-        </button>
-
-        <button
-          disabled={loading}
-          onClick={confirmDelete}
-          className="flex-1 rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:opacity-50"
-        >
-          {loading ? "Deleting..." : "Delete"}
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-)}
-
-</div>   
-
-);
+  );
 }
 
 export default AdminDashboard;    

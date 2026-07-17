@@ -60,7 +60,7 @@ function BlogHero({ blog }) {
 
             {blog.views} Views
 
-            </div>
+          </div>
         </div>
 
       </div>

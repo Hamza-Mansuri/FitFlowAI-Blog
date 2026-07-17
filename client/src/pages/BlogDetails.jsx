@@ -13,11 +13,17 @@ import PageTransition from "../components/common/PageTransition";
 import GlowBackground from "../components/common/GlowBackground";
 import { motion } from "framer-motion";
 
+import BlogDetailsSkeleton from "../components/blog/BlogDetailsSkeleton";
+
+
+
 function BlogDetails() {
   const { id } = useParams();
 
   const [blog, setBlog] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +41,9 @@ function BlogDetails() {
   const hasIncremented = useRef(null);
 
   useEffect(() => {
+
+    setBlog(null);
+
     const fetchBlog = async () => {
       try {
         if (hasIncremented.current !== id) {
@@ -45,10 +54,10 @@ function BlogDetails() {
         const res = await API.get(`/blogs/${id}`);
         setBlog(res.data);
 
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+        // window.scrollTo({
+        //   top: 0,
+        //   behavior: "smooth",
+        // });
 
       } catch (error) {
         console.error(error);
@@ -58,21 +67,15 @@ function BlogDetails() {
     fetchBlog();
   }, [id]);
 
-  if (!blog) {
-    return (
-      <div className="py-24 text-center">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
-          Article Not Found
-        </h2>
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
+  }, [id]);
 
-        <Link
-          to="/"
-          className="mt-6 inline-block rounded-full bg-green-600 px-6 py-3 text-white hover:bg-green-700"
-        >
-          Back Home
-        </Link>
-      </div>
-    );
+  if (!blog) {
+    return <BlogDetailsSkeleton />;
   }
 
   return (
@@ -85,7 +88,7 @@ function BlogDetails() {
       />
 
       {/* Reading Progress Bar */}
-      <div 
+      <div
         className="fixed left-0 top-[64px] z-50 h-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-75 shadow-[0_0_8px_rgba(34,197,94,0.5)]"
         style={{ width: `${scrollProgress}%` }}
       />
@@ -101,9 +104,15 @@ function BlogDetails() {
 
             {/* Content Container */}
             <div className="relative max-w-4xl mx-auto mt-12 px-2 sm:px-6">
-              
-              <article
-                className="
+
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35 }}
+              >
+                <article
+                  className="
                   prose
                   prose-lg
                   prose-slate
@@ -134,10 +143,12 @@ function BlogDetails() {
                   prose-blockquote:border-green-500
                   dark:prose-blockquote:border-green-400
                 "
-                dangerouslySetInnerHTML={{
-                  __html: blog.content,
-                }}
-              />
+                  dangerouslySetInnerHTML={{
+                    __html: blog.content,
+                  }}
+                />
+
+              </motion.div>
 
               {/* Cards wrapped in premium container spacing */}
               <div className="mt-12 space-y-6">

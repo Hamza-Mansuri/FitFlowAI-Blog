@@ -48,12 +48,11 @@ function Navbar() {
       : "text-slate-600 hover:text-green-500 transition-all duration-300 dark:text-slate-300 dark:hover:text-green-400 py-1";
 
   return (
-    <header 
-      className={`sticky top-0 z-50 transition-all duration-500 ${
-        scrolled 
-          ? "border-b border-slate-200/40 bg-white/70 backdrop-blur-xl dark:border-slate-900/30 dark:bg-slate-950/65 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] py-2" 
-          : "border-b border-transparent bg-white/90 dark:bg-slate-950/90 py-4"
-      } dark:text-white`}
+    <header
+      className={`sticky top-0 z-50 transition-all duration-500 ${scrolled
+        ? "border-b border-slate-200/40 bg-white/70 backdrop-blur-xl dark:border-slate-900/30 dark:bg-slate-950/65 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] py-2"
+        : "border-b border-transparent bg-white/90 dark:bg-slate-950/90 py-4"
+        } dark:text-white`}
     >
       <Container>
         <div className="flex h-16 items-center justify-between">
@@ -90,7 +89,7 @@ function Navbar() {
 
           {/* Right Side */}
           <div className="hidden md:flex items-center gap-4">
-            
+
             {/* Desktop Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -239,7 +238,7 @@ function Navbar() {
                           <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                         </div>
                       </div>
-                      
+
                       {/* Mobile Theme Toggle */}
                       <button
                         onClick={toggleTheme}
@@ -248,14 +247,36 @@ function Navbar() {
                         {theme === "dark" ? <FaSun size={13} className="text-yellow-400" /> : <FaMoon size={13} />}
                       </button>
                     </div>
-                    
+
                     {user.role === "admin" && (
                       <Link
                         to="/admin"
-                        className="block text-sm font-semibold text-green-600 px-1 dark:text-green-450 hover:underline"
                         onClick={() => setMenuOpen(false)}
+                        className="
+      flex items-center justify-between
+      rounded-2xl
+      bg-gradient-to-r
+      from-green-500
+      to-emerald-600
+      px-5
+      py-4
+      text-white
+      shadow-lg
+    "
                       >
-                        Admin Dashboard
+                        <div>
+                          <p className="text-xs opacity-80">
+                            Administrator
+                          </p>
+
+                          <p className="font-semibold">
+                            Dashboard
+                          </p>
+                        </div>
+
+                        <span className="text-xl">
+                          →
+                        </span>
                       </Link>
                     )}
                     <button
