@@ -6,9 +6,15 @@ import helmet from "helmet";
 import connectDB from "./config/db.js";
 
 import blogRoutes from "./routes/blogRoutes.js";
-
 import authRoutes from "./routes/authRoutes.js";
 import newsletterRoutes from "./routes/newsletterRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import workoutRoutes from "./routes/workoutRoutes.js";
+import nutritionRoutes from "./routes/nutritionRoutes.js";
+import checkInRoutes from "./routes/checkInRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
+import aiCoachRoutes from "./routes/aiCoachRoutes.js";
 
 // dotenv.config();
 
@@ -56,6 +62,13 @@ app.use(express.json());
 app.use("/api/blogs", blogRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/ai", aiRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/workouts", workoutRoutes);
+app.use("/api/nutrition", nutritionRoutes);
+app.use("/api/checkin", checkInRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/ai-coach", aiCoachRoutes);
 
 // Test Route
 app.get("/", (req, res) => {

@@ -1,12 +1,11 @@
-import Container from "../layout/Container";
-import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import AnimatedBackground from "./AnimatedBackground";
 
 function Hero() {
   const [seg1, setSeg1] = useState("");
   const [seg2, setSeg2] = useState("");
   const [seg3, setSeg3] = useState("");
-  const [seg4, setSeg4] = useState("");
   const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
@@ -49,68 +48,82 @@ function Hero() {
   }, []);
 
   return (
-    <section className="relative pt-16 pb-6 overflow-hidden">
-      <Container>
-        <div className="mx-auto max-w-4xl text-center">
+    <section className="relative w-full h-screen min-h-[650px] overflow-hidden flex flex-col items-center justify-between text-white select-none">
+      {/* Background layer */}
+      <AnimatedBackground />
 
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-xs font-extrabold text-green-700 dark:bg-green-950/30 dark:text-green-400 border border-green-200/50 dark:border-green-900/30 backdrop-blur"
-          >
-            <span className="flex h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            📚 Evidence-Based Fitness Education
-          </motion.div>
+      <div className="relative z-20 flex-grow flex flex-col items-center justify-center px-4 max-w-5xl mx-auto text-center pt-28 pb-12">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-xs font-semibold text-emerald-400 backdrop-blur-md mb-8 hover:bg-emerald-500/15 transition-all duration-300"
+        >
+          <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Evidence-Based Fitness Education</span>
+        </motion.div>
 
-          {/* Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="
-mt-6
-text-4xl
-font-extrabold
-leading-[1.1]
-tracking-tight
-text-slate-900
-dark:text-white
-sm:text-5xl
-md:text-[3.5rem]
-lg:text-[4rem]
-min-h-[110px]
-"
-          >
-            {seg1}
-            <span className="bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-              {seg2}
-            </span>
-
-            <br />
-
+        {/* Heading */}
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.15] text-slate-900 dark:text-white max-w-4xl min-h-[160px] md:min-h-[220px]">
+          <span>{seg1}</span>
+          <span className="bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+            {seg2}
+          </span>
+          <br />
+          <span className="bg-gradient-to-b from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
             {seg3}
-            {isTyping && (
-              <span className="animate-pulse text-green-500 select-none">|</span>
-            )}
+          </span>
+          {isTyping && (
+            <span className="animate-[blink_0.8s_infinite] text-emerald-450 ml-1 font-light">|</span>
+          )}
+        </h1>
 
-          </motion.h1>
+        {/* Description */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 max-w-2xl text-base md:text-lg text-slate-650 dark:text-slate-400 leading-relaxed font-light px-2"
+        >
+          Explore science-backed fitness, nutrition and lifestyle articles designed to help you build lasting healthy habits.
+        </motion.p>
+      </div>
 
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-650 md:text-lg dark:text-slate-300"
-          >
-            Explore science-backed articles on strength training,
-            nutrition, fat loss, recovery, and healthy living to
-            build lasting fitness habits.
-          </motion.p>
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+        className="relative z-20 pb-8 flex flex-col items-center gap-2 text-slate-400/80 hover:text-emerald-400 transition-colors duration-300 cursor-pointer"
+        onClick={() => {
+          window.scrollTo({
+            top: window.innerHeight - 64,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <span className="text-[10px] uppercase tracking-[0.2em] font-medium opacity-60">Scroll to explore</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 1.8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="w-5 h-8 rounded-full border-2 border-current flex justify-center pt-1.5 opacity-80"
+        >
+          <div className="w-1 h-2 rounded-full bg-current animate-bounce" />
+        </motion.div>
+      </motion.div>
 
-        </div>
-      </Container>
+      {/* Embedded Blinking Animation styles */}
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 }

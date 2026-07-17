@@ -105,9 +105,33 @@ const blogSchema = new mongoose.Schema({
     ref: "User",
     default: [],
   },
+
+  embedding: {
+    type: [Number],
+    default: [],
+  },
 },
 {
   timestamps: true,
+});
+
+blogSchema.pre("save", async function (next) {
+  if (
+    this.isModified("title") ||
+    this.isModified("content") ||
+    this.isModified("description") ||
+    !this.embedding ||
+    this.embedding.length === 0
+  ) {
+    try {
+      const textToEmbed = `${this.title} ${this.description} ${this.category} ${this.expertTip || ""} ${(this.takeaways || []).join(" ")}`;
+      const { generateEmbedding } = await import("../services/embeddingService.js");
+      this.embedding = await generateEmbedding(textToEmbed);
+    } catch (err) {
+      console.error("Mongoose pre-save embedding generation failed:", err);
+    }
+  }
+  next();
 });
 
 // Compile models targeting 5 separate collections (folders)

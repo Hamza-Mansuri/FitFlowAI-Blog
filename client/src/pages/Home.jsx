@@ -4,7 +4,9 @@ import Hero from "../components/common/Hero";
 import SearchBar from "../components/common/SearchBar";
 import CategoryList from "../components/common/CategoryList";
 import FeaturedBlog from "../components/blog/FeaturedBlog";
+import Testimonials from "../components/common/Testimonials";
 import TrendingBlogs from "../components/blog/TrendingBlogs";
+import FinalCTA from "../components/common/FinalCTA";
 import Newsletter from "../components/common/Newsletter";
 import Footer from "../components/layout/Footer";
 import Stats from "../components/common/Stats";
@@ -92,11 +94,22 @@ function Home() {
         {/* Animated background glows */}
         <GlowBackground />
 
-        <div className="relative z-10 space-y-12 pb-1">
+        <div className="relative z-10 space-y-10 md:space-y-14 pb-12">
           <Hero />
-          <FeaturedBlog />
-          <Stats />
-          <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6">
+          
+          <div className="relative z-10">
+            <FeaturedBlog blogs={blogs} />
+          </div>
+
+          <div className="relative z-10">
+            <Testimonials />
+          </div>
+
+          <div className="relative z-10">
+            <Stats />
+          </div>
+
+          <div className="space-y-12 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <CategoryList
               selectedCategory={selectedCategory}
               setSelectedCategory={handleSetCategory}
@@ -106,8 +119,19 @@ function Home() {
               setSearch={handleSetSearch}
             />
           </div>
-          <TrendingBlogs blogs={filteredBlogs} loading={loading} />
-          <Newsletter />
+
+          <div className="relative z-10">
+            <TrendingBlogs blogs={filteredBlogs} loading={loading} />
+          </div>
+
+          <div className="relative z-10">
+            <FinalCTA />
+          </div>
+
+          <div className="relative z-10">
+            <Newsletter />
+          </div>
+
           <Footer />
         </div>
       </div>

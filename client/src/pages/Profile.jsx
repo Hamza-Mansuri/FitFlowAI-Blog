@@ -16,18 +16,33 @@ import {
   FaCalendarAlt,
   FaEnvelope,
   FaArrowRight,
-  FaExclamationTriangle
+  FaExclamationTriangle,
+  FaDumbbell,
+  FaAppleAlt,
+  FaCalendarCheck,
+  FaChevronRight,
+  FaChartLine,
+  FaRobot
 } from "react-icons/fa";
 import API from "../services/api";
 import SEO from "../components/common/SEO";
 import GlowBackground from "../components/common/GlowBackground";
 import PageTransition from "../components/common/PageTransition";
+import EmptyState from "../components/common/EmptyState";
+import SkeletonImage from "../components/common/SkeletonImage";
+import FitnessProfileCard from "../components/profile/FitnessProfileCard";
+import WorkoutCard from "../components/workout/WorkoutCard";
+import AnalyticsDashboard from "./AnalyticsDashboard";
+import AICoachWorkspace from "./AICoachWorkspace";
 
 function Profile() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("my-blogs");
+  const [myWorkouts, setMyWorkouts] = useState([]);
+  const [myNutrition, setMyNutrition] = useState([]);
+  const [todayLog, setTodayLog] = useState(null);
   const navigate = useNavigate();
 
   const fetchProfileData = async () => {
@@ -44,16 +59,69 @@ function Profile() {
     }
   };
 
+  const fetchWorkouts = async () => {
+    try {
+      const { data } = await API.get("/workouts");
+      setMyWorkouts(data.workouts || []);
+    } catch (err) {
+      console.error("Failed to load workouts on profile:", err);
+    }
+  };
+
+  const fetchNutrition = async () => {
+    try {
+      const { data } = await API.get("/nutrition");
+      setMyNutrition(data.plans || []);
+    } catch (err) {
+      console.error("Failed to load nutrition plans on profile:", err);
+    }
+  };
+
+  const fetchTodayLog = async () => {
+    try {
+      const { data } = await API.get("/checkin/today");
+      setTodayLog(data.checkIn || null);
+    } catch (err) {
+      console.error("Failed to fetch today's log on profile:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProfileData();
+    fetchWorkouts();
+    fetchNutrition();
+    fetchTodayLog();
   }, []);
+
+  const handleDeleteWorkout = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this workout plan?")) return;
+    try {
+      await API.delete(`/workouts/${id}`);
+      toast.success("Workout routine deleted successfully");
+      fetchWorkouts();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete workout");
+    }
+  };
+
+  const handleDeleteNutrition = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this nutrition plan?")) return;
+    try {
+      await API.delete(`/nutrition/${id}`);
+      toast.success("Nutrition plan deleted successfully");
+      fetchNutrition();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete nutrition plan");
+    }
+  };
 
   const handleDelete = async (blogId) => {
     if (!window.confirm("Are you sure you want to delete this blog?")) return;
     try {
       await API.delete(`/blogs/${blogId}`);
       toast.success("Blog deleted successfully!");
-      // Refresh
       fetchProfileData();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to delete blog");
@@ -90,6 +158,10 @@ function Profile() {
     { id: "my-blogs", name: `My Blogs (${myBlogs.length})`, icon: <FaBook /> },
     { id: "liked-blogs", name: `Liked Blogs (${likedBlogs.length})`, icon: <FaHeart /> },
     { id: "saved-blogs", name: `Saved Blogs (${savedBlogs.length})`, icon: <FaBookmark /> },
+    { id: "workouts", name: `My Workouts (${myWorkouts.length})`, icon: <FaDumbbell /> },
+    { id: "nutrition", name: `My Meal Plans (${myNutrition.length})`, icon: <FaAppleAlt /> },
+    { id: "analytics", name: "Progress Analytics", icon: <FaChartLine /> },
+    { id: "ai-coach", name: "AI Coach Workspace", icon: <FaRobot /> },
   ];
 
   return (
@@ -149,6 +221,57 @@ function Profile() {
             ))}
           </div>
 
+          <div className="mb-10">
+            <FitnessProfileCard />
+          </div>
+
+          {!todayLog && (
+            <div className="rounded-[2.5rem] border border-dashed border-emerald-500/30 bg-emerald-500/5 dark:bg-emerald-500/10 p-6 sm:p-8 mb-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-500 border border-emerald-500/20">
+                  <FaCalendarCheck size={16} />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                    Start Today's Check-in
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-light mt-0.5 max-w-md">
+                    Log your sleep, weight, stress, and workouts so FitCoach AI can suggest safety modifications and volume adjustments.
+                  </p>
+                </div>
+              </div>
+              <Link to="/checkin">
+                <button className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 px-6 py-3 text-xs font-extrabold text-slate-955 shadow-md shadow-emerald-500/15 cursor-pointer">
+                  <span>Complete Log</span>
+                  <FaChevronRight size={8} />
+                </button>
+              </Link>
+            </div>
+          )}
+
+          {todayLog && (
+            <div className="rounded-[2.5rem] border border-slate-200/50 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl p-6 sm:p-8 mb-10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  <FaCalendarCheck size={16} />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
+                    Daily Check-in Completed
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-450 font-light mt-0.5">
+                    Today's recovery status calculated score: <strong className="text-emerald-500 font-extrabold">{todayLog.recoveryScore}%</strong>. View AI Recommendations.
+                  </p>
+                </div>
+              </div>
+              <Link to="/checkin">
+                <button className="flex items-center gap-1.5 rounded-xl border border-slate-250 bg-white/50 px-5 py-3 text-xs font-extrabold text-slate-700 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-200 cursor-pointer hover:bg-slate-100">
+                  <span>View Recovery Dashboard</span>
+                </button>
+              </Link>
+            </div>
+          )}
+
           {/* Tab Control */}
           <div className="flex border-b border-slate-250 dark:border-slate-850 mb-8 gap-6 overflow-x-auto">
             {tabs.map((tab) => (
@@ -179,28 +302,25 @@ function Profile() {
               {activeTab === "my-blogs" && (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {myBlogs.length === 0 ? (
-                    <div className="col-span-full py-12 text-center text-slate-500">
-                      You haven't written any blogs yet.
-                      <div className="mt-4">
-                        <Link
-                          to="/publish"
-                          className="rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-2.5 text-sm font-bold text-white shadow shadow-green-500/20"
-                        >
-                          Write Your First Blog
-                        </Link>
-                      </div>
+                    <div className="col-span-full">
+                      <EmptyState
+                        title="No Published Blogs"
+                        description="You haven't authored any fitness articles yet. Share your experience with the community."
+                        actionText="Write Your First Blog"
+                        actionPath="/publish"
+                      />
                     </div>
                   ) : (
                     myBlogs.map((blog) => (
                       <div
                         key={blog._id}
-                        className="flex flex-col rounded-3xl border border-slate-200/60 bg-white/70 dark:border-slate-900/40 dark:bg-slate-950/65 overflow-hidden shadow-md"
+                        className="flex flex-col rounded-[2.25rem] border border-slate-200/50 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
                       >
                         <div className="h-44 relative bg-slate-100 dark:bg-slate-900 overflow-hidden">
-                          <img
+                          <SkeletonImage
                             src={blog.image || "https://images.unsplash.com/photo-1517838277536-f5f99be501cd"}
                             alt={blog.title}
-                            className="w-full h-full object-cover"
+                            aspectClass="h-44 w-full"
                           />
                           {/* Status Badge */}
                           <div className="absolute top-4 right-4">
@@ -288,21 +408,26 @@ function Profile() {
               {activeTab === "liked-blogs" && (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {likedBlogs.length === 0 ? (
-                    <div className="col-span-full py-12 text-center text-slate-500">
-                      You haven't liked any blogs yet.
+                    <div className="col-span-full">
+                      <EmptyState
+                        title="No Liked Articles"
+                        description="You haven't liked any fitness articles yet. Browse popular categories to find interesting guides."
+                        actionText="Explore Categories"
+                        actionPath="/categories"
+                      />
                     </div>
                   ) : (
                     likedBlogs.map((blog) => (
                       <Link
                         key={blog._id}
                         to={`/blog/${blog._id}`}
-                        className="group flex flex-col rounded-3xl border border-slate-200/60 bg-white/70 dark:border-slate-900/40 dark:bg-slate-950/65 overflow-hidden shadow-md hover:shadow-lg transition-all duration-305"
+                        className="group flex flex-col rounded-[2.25rem] border border-slate-200/50 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
                       >
                         <div className="h-44 relative bg-slate-100 dark:bg-slate-900 overflow-hidden">
-                          <img
+                          <SkeletonImage
                             src={blog.image}
                             alt={blog.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
+                            aspectClass="h-44 w-full"
                           />
                         </div>
                         <div className="p-5 flex-1 flex flex-col justify-between">
@@ -331,21 +456,26 @@ function Profile() {
               {activeTab === "saved-blogs" && (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {savedBlogs.length === 0 ? (
-                    <div className="col-span-full py-12 text-center text-slate-500">
-                      You haven't saved any blogs yet.
+                    <div className="col-span-full">
+                      <EmptyState
+                        title="No Saved Articles"
+                        description="You haven't bookmarked any guides yet. Save your favorite strength, nutrition, and wellness topics for quick access."
+                        actionText="Explore Topics"
+                        actionPath="/categories"
+                      />
                     </div>
                   ) : (
                     savedBlogs.map((blog) => (
                       <Link
                         key={blog._id}
                         to={`/blog/${blog._id}`}
-                        className="group flex flex-col rounded-3xl border border-slate-200/60 bg-white/70 dark:border-slate-900/40 dark:bg-slate-950/65 overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
+                        className="group flex flex-col rounded-[2.25rem] border border-slate-200/50 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300"
                       >
                         <div className="h-44 relative bg-slate-100 dark:bg-slate-900 overflow-hidden">
-                          <img
+                          <SkeletonImage
                             src={blog.image}
                             alt={blog.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            aspectClass="h-44 w-full"
                           />
                         </div>
                         <div className="p-5 flex-1 flex flex-col justify-between">
@@ -368,6 +498,97 @@ function Profile() {
                       </Link>
                     ))
                   )}
+                </div>
+              )}
+
+              {activeTab === "workouts" && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {myWorkouts.length === 0 ? (
+                    <div className="col-span-full">
+                      <EmptyState
+                        title="No Saved Routines"
+                        description="You haven't generated any custom workouts yet. Build one now with FitCoach AI."
+                        actionText="Build Workout Routine"
+                        actionPath="/workouts/build"
+                        icon={FaDumbbell}
+                      />
+                    </div>
+                  ) : (
+                    myWorkouts.map((workout) => (
+                      <WorkoutCard
+                        key={workout._id}
+                        workout={workout}
+                        onDelete={handleDeleteWorkout}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
+
+              {activeTab === "nutrition" && (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {myNutrition.length === 0 ? (
+                    <div className="col-span-full">
+                      <EmptyState
+                        title="No Saved Meal Plans"
+                        description="You haven't generated any nutrition plans yet. Setup one now using BMR and TDEE math."
+                        actionText="Generate Nutrition Program"
+                        actionPath="/nutrition/build"
+                        icon={FaAppleAlt}
+                      />
+                    </div>
+                  ) : (
+                    myNutrition.map((plan) => (
+                      <motion.div
+                        key={plan._id}
+                        whileHover={{ y: -6, scale: 1.015 }}
+                        className="group rounded-3xl border border-slate-200/50 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl p-6 shadow-md transition-all duration-300 hover:border-emerald-500/30 flex flex-col justify-between"
+                      >
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <span className="inline-flex rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
+                              {plan.planType}
+                            </span>
+                            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mt-2 group-hover:text-emerald-500 transition-colors duration-300 line-clamp-1">
+                              {plan.title}
+                            </h3>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteNutrition(plan._id)}
+                            className="p-2 text-slate-450 hover:text-red-500 dark:hover:text-red-400 transition-colors cursor-pointer"
+                          >
+                            <FaTrashAlt size={14} />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 border-y border-slate-200/45 dark:border-slate-800/30 py-3.5 mb-4 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                          <div>Energy: <strong className="text-slate-855 dark:text-white">{plan.dailyCalories} kcal</strong></div>
+                          <div>Split: <strong className="text-slate-855 dark:text-white">{plan.mealCount} meals/day</strong></div>
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-slate-450">
+                          <span className="capitalize">{plan.dietPreference} Diet</span>
+                          <Link
+                            to={`/nutrition/${plan._id}`}
+                            className="inline-flex items-center gap-1.5 font-bold text-emerald-500 hover:underline"
+                          >
+                            <span>View Program</span>
+                            <FaEye size={12} />
+                          </Link>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {activeTab === "analytics" && (
+                <div className="w-full">
+                  <AnalyticsDashboard />
+                </div>
+              )}
+
+              {activeTab === "ai-coach" && (
+                <div className="w-full">
+                  <AICoachWorkspace />
                 </div>
               )}
             </motion.div>

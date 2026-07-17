@@ -1,36 +1,60 @@
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 function TakeawayCard({ takeaways }) {
   if (!takeaways || takeaways.length === 0) return null;
 
-  return (
-    <div className="mx-auto mt-12 max-w-4xl">
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
-      <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    },
+  };
+
+  return (
+    <div className="mx-auto mt-14 max-w-4xl space-y-6">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
         Key Takeaways
       </h2>
 
-      <div className="mt-6 space-y-4">
-
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-60px" }}
+        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      >
         {takeaways.map((item, index) => (
-
-          <div
+          <motion.div
             key={index}
-            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950"
+            variants={itemVariants}
+            whileHover={{ y: -6, scale: 1.02 }}
+            className="flex items-start gap-4 rounded-[2rem] border border-slate-200 bg-white/40 dark:border-slate-800/40 dark:bg-slate-950/40 backdrop-blur-xl p-6 shadow-sm hover:border-emerald-500/30 hover:shadow-emerald-500/5 transition-all duration-300"
           >
+            <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 text-emerald-550 dark:text-emerald-400 border border-emerald-500/25 mt-0.5 flex-shrink-0">
+              <FaCheck size={11} />
+            </div>
 
-            <FaCheckCircle className="text-green-600 flex-shrink-0 dark:text-green-400" />
-
-            <span className="text-slate-700 dark:text-slate-300">
+            <span className="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed font-light">
               {item}
             </span>
-
-          </div>
-
+          </motion.div>
         ))}
-
-      </div>
-
+      </motion.div>
     </div>
   );
 }
