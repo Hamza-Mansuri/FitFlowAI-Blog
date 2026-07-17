@@ -26,6 +26,30 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "user"],
       default: "user",
     },
+
+    likedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
+
+    savedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
+
+    publishedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
   },
   {
     timestamps: true,

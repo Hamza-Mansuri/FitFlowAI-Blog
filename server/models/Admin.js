@@ -19,6 +19,30 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    likedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
+
+    savedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
+
+    publishedBlogs: {
+      type: [{
+        blogId: { type: mongoose.Schema.Types.ObjectId },
+        category: { type: String }
+      }],
+      default: []
+    },
   },
   {
     timestamps: true,

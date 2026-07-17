@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState, useRef } from "react";
 import Container from "../components/layout/Container";
@@ -12,18 +12,19 @@ import API from "../services/api";
 import PageTransition from "../components/common/PageTransition";
 import GlowBackground from "../components/common/GlowBackground";
 import { motion } from "framer-motion";
-
+import { useAuth } from "../context/AuthContext";
 import BlogDetailsSkeleton from "../components/blog/BlogDetailsSkeleton";
-
-
 
 function BlogDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [blog, setBlog] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -41,7 +42,6 @@ function BlogDetails() {
   const hasIncremented = useRef(null);
 
   useEffect(() => {
-
     setBlog(null);
 
     const fetchBlog = async () => {
@@ -53,19 +53,20 @@ function BlogDetails() {
 
         const res = await API.get(`/blogs/${id}`);
         setBlog(res.data);
+        setLikesCount(res.data.likesCount || 0);
 
-        // window.scrollTo({
-        //   top: 0,
-        //   behavior: "smooth",
-        // });
-
+        if (user) {
+          const userId = user.id || user._id;
+          setLiked(res.data.likes?.includes(userId));
+          setSaved(res.data.saves?.includes(userId));
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchBlog();
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     window.scrollTo({
@@ -73,6 +74,33 @@ function BlogDetails() {
       behavior: "instant",
     });
   }, [id]);
+
+  const handleLike = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await API.post(`/blogs/${id}/like`);
+      setLiked(res.data.liked);
+      setLikesCount(res.data.likesCount);
+    } catch (error) {
+      console.error("Failed to toggle like", error);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await API.post(`/blogs/${id}/save`);
+      setSaved(res.data.saved);
+    } catch (error) {
+      console.error("Failed to toggle save", error);
+    }
+  };
 
   if (!blog) {
     return <BlogDetailsSkeleton />;
@@ -99,13 +127,18 @@ function BlogDetails() {
 
         <section className="relative z-10 py-10">
           <Container>
-            {/* Hero Image */}
-            <BlogHero blog={blog} />
+            {/* Hero Header with Actions */}
+            <BlogHero
+              blog={blog}
+              liked={liked}
+              saved={saved}
+              likesCount={likesCount}
+              onLike={handleLike}
+              onSave={handleSave}
+            />
 
             {/* Content Container */}
             <div className="relative max-w-4xl mx-auto mt-12 px-2 sm:px-6">
-
-
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -147,7 +180,6 @@ function BlogDetails() {
                     __html: blog.content,
                   }}
                 />
-
               </motion.div>
 
               {/* Cards wrapped in premium container spacing */}
@@ -173,7 +205,6 @@ function BlogDetails() {
                   </Link>
                 </motion.div>
               </div>
-
             </div>
           </Container>
         </section>

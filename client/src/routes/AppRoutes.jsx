@@ -13,8 +13,16 @@ import AdminDashboard from "../pages/AdminDashboard";
 
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import Profile from "../pages/Profile";
+import PublishBlog from "../pages/PublishBlog";
+import AuthorPage from "../pages/AuthorPage";
 
 import ProtectedRoute from "../components/common/ProtectedRoute";
+
+const UserRoute = ({ children }) => {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" replace />;
+};
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -29,42 +37,62 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {!user ? (
-        // Public Routes when not logged in
-        <>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </>
-      ) : (
-        // Authenticated Routes when logged in
-        <>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/blog/:id" element={<BlogDetails />} />
-          
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/landing" element={<Landing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/categories" element={<Categories />} />
+      <Route path="/blog/:id" element={<BlogDetails />} />
+      <Route path="/author/:authorId" element={<AuthorPage />} />
 
-          <Route
-            path="/admin/login"
-            element={<Navigate to="/" replace />}
-          />
+      {/* Auth Redirects */}
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/" replace /> : <Login />}
+      />
+      <Route
+        path="/signup"
+        element={user ? <Navigate to="/" replace /> : <Signup />}
+      />
 
-          <Route path="/login" element={<Navigate to="/" replace />} />
-          <Route path="/signup" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<NotFound />} />
-        </>
-      )}
+      {/* Logged-in User Routes */}
+      <Route
+        path="/profile"
+        element={
+          <UserRoute>
+            <Profile />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/publish"
+        element={
+          <UserRoute>
+            <PublishBlog />
+          </UserRoute>
+        }
+      />
+      <Route
+        path="/edit/:id"
+        element={
+          <UserRoute>
+            <PublishBlog />
+          </UserRoute>
+        }
+      />
+
+      {/* Admin Protected Route */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

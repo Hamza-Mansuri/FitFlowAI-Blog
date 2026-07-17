@@ -77,13 +77,23 @@ function Navbar() {
                 Categories
               </NavLink>
 
-              <NavLink to="/about" className={navClass}>
-                About
-              </NavLink>
-
-              <NavLink to="/contact" className={navClass}>
-                Contact
-              </NavLink>
+              {user && (
+                <>
+                  {user.role !== "admin" && (
+                    <NavLink to="/publish" className={navClass}>
+                      Publish Blog
+                    </NavLink>
+                  )}
+                  <NavLink to="/profile" className={navClass}>
+                    Profile
+                  </NavLink>
+                  {user.role === "admin" && (
+                    <NavLink to="/admin" className={navClass}>
+                      Admin Dashboard
+                    </NavLink>
+                  )}
+                </>
+              )}
             </nav>
           </div>
 
@@ -197,21 +207,37 @@ function Navbar() {
                   Categories
                 </NavLink>
 
-                <NavLink
-                  to="/about"
-                  className={navClass}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  About
-                </NavLink>
+                {user && (
+                  <>
+                    {user.role !== "admin" && (
+                      <NavLink
+                        to="/publish"
+                        className={navClass}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Publish Blog
+                      </NavLink>
+                    )}
 
-                <NavLink
-                  to="/contact"
-                  className={navClass}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Contact
-                </NavLink>
+                    <NavLink
+                      to="/profile"
+                      className={navClass}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+
+                    {user.role === "admin" && (
+                      <NavLink
+                        to="/admin"
+                        className={navClass}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        Admin Dashboard
+                      </NavLink>
+                    )}
+                  </>
+                )}
 
                 {/* Mobile Theme Toggle in Menu if logged out */}
                 {!user && (

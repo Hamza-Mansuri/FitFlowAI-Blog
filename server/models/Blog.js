@@ -54,6 +54,57 @@ const blogSchema = new mongoose.Schema({
   takeaways: {
     type: [String],
   },
+
+  authorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+
+  authorName: {
+    type: String,
+  },
+
+  authorRole: {
+    type: String,
+    enum: ["admin", "user"],
+    default: "user",
+  },
+
+  status: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+  },
+
+  likesCount: {
+    type: Number,
+    default: 0,
+  },
+
+  approvedAt: {
+    type: Date,
+  },
+
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admin",
+  },
+
+  rejectionReason: {
+    type: String,
+  },
+
+  likes: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
+
+  saves: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
 },
 {
   timestamps: true,

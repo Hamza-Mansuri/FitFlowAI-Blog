@@ -3,10 +3,9 @@ import AppRoutes from "./routes/AppRoutes";
 import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const { user } = useAuth();
   return (
     <>
-      {user && <Navbar />}
+      <Navbar />
       <AppRoutes />
     </>
   );
