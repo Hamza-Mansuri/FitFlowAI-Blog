@@ -92,26 +92,26 @@ function Stats() {
     visible: {
       opacity: 1,
       transition: { 
-        staggerChildren: 0.12 
+        staggerChildren: 0.08 
       },
     },
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 35, scale: 0.96 },
+    hidden: { opacity: 0, y: 25, scale: 0.97 },
     visible: { 
       opacity: 1, 
       y: 0, 
       scale: 1,
       transition: { 
-        duration: 0.7, 
+        duration: 0.6, 
         ease: [0.16, 1, 0.3, 1] 
       } 
     },
   };
 
   return (
-    <section className="py-6 md:py-10 relative overflow-hidden">
+    <section className="py-4 md:py-6 relative overflow-hidden bg-transparent">
       {/* Background glow overlay */}
       <div className="absolute right-[-5%] top-[10%] w-[30vw] h-[30vw] rounded-full bg-emerald-500/5 blur-[130px] pointer-events-none" />
 
@@ -121,7 +121,7 @@ function Stats() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-2 gap-6 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-4 lg:grid-cols-4"
         >
           {stats.map((item) => {
             const Icon = item.icon;
@@ -131,21 +131,21 @@ function Stats() {
                 key={item.label}
                 variants={cardVariants}
                 whileHover={{ 
-                  y: -8, 
-                  scale: 1.02,
-                  boxShadow: "0 20px 30px -10px rgba(16, 185, 129, 0.08)"
+                  y: -4, 
+                  scale: 1.01,
+                  boxShadow: "0 15px 25px -8px rgba(16, 185, 129, 0.05)"
                 }}
-                className="group rounded-[2rem] border border-slate-200/50 dark:border-slate-800/40 bg-white/50 dark:bg-slate-950/40 backdrop-blur-xl p-8 shadow-sm transition-all duration-300"
+                className="group rounded-[1.8rem] border border-slate-200/50 dark:border-slate-800/40 bg-white/50 dark:bg-slate-950/40 backdrop-blur-xl p-5 md:p-6 shadow-sm transition-all duration-300"
               >
-                <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr ${item.color} transition-all duration-300 group-hover:scale-105 shadow-inner`}>
-                  <Icon size={24} />
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr ${item.color} transition-all duration-300 group-hover:scale-105 shadow-inner`}>
+                  <Icon size={18} />
                 </div>
 
-                <h3 className="mt-6 text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <h3 className="mt-4 text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                   <CountUp target={item.value} />
                 </h3>
 
-                <p className="mt-2 text-xs font-bold text-slate-550 dark:text-slate-400 uppercase tracking-wider">
+                <p className="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   {item.label}
                 </p>
               </motion.div>

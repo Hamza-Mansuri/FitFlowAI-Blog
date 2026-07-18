@@ -15,7 +15,6 @@ import nutritionRoutes from "./routes/nutritionRoutes.js";
 import checkInRoutes from "./routes/checkInRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import aiCoachRoutes from "./routes/aiCoachRoutes.js";
-
 // dotenv.config();
 
 import "dotenv/config";

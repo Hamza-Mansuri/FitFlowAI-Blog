@@ -181,8 +181,15 @@ function FitnessProfileCard() {
               <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.goal}</span>
             </div>
             <div>
-              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Experience Level</span>
-              <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.experience}</span>
+              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Experience Level</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.experience}</span>
+                <div className="flex gap-1">
+                  <div className={`h-1.5 flex-grow rounded-full transition-colors duration-500 ${profile.experience?.toLowerCase() === 'beginner' || profile.experience?.toLowerCase() === 'intermediate' || profile.experience?.toLowerCase() === 'advanced' ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                  <div className={`h-1.5 flex-grow rounded-full transition-colors duration-500 ${profile.experience?.toLowerCase() === 'intermediate' || profile.experience?.toLowerCase() === 'advanced' ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                  <div className={`h-1.5 flex-grow rounded-full transition-colors duration-500 ${profile.experience?.toLowerCase() === 'advanced' ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                </div>
+              </div>
             </div>
             <div>
               <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Metrics</span>
@@ -202,16 +209,52 @@ function FitnessProfileCard() {
               <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.preferredDiet}</span>
             </div>
             <div>
-              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Activity Level</span>
-              <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.activityLevel}</span>
+              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Activity Level</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white capitalize">{profile.activityLevel}</span>
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ 
+                      width: 
+                        profile.activityLevel?.toLowerCase() === 'sedentary' ? '20%' :
+                        profile.activityLevel?.toLowerCase() === 'light' ? '40%' :
+                        profile.activityLevel?.toLowerCase() === 'moderate' ? '60%' :
+                        profile.activityLevel?.toLowerCase() === 'active' ? '80%' : '100%'
+                    }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-gradient-to-r from-emerald-500 to-green-400"
+                  />
+                </div>
+              </div>
             </div>
             <div>
-              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Sleep Hours</span>
-              <span className="text-sm font-extrabold text-slate-800 dark:text-white">{profile.sleepHours} hrs / night</span>
+              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Sleep Hours</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white">{profile.sleepHours} hrs / night</span>
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min((profile.sleepHours / 9) * 100, 100)}%` }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                  />
+                </div>
+              </div>
             </div>
             <div>
-              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Water Intake</span>
-              <span className="text-sm font-extrabold text-slate-800 dark:text-white">{profile.waterIntake} L / day</span>
+              <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Water Intake</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white">{profile.waterIntake} L / day</span>
+                <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min((profile.waterIntake / 4.5) * 100, 100)}%` }}
+                    transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="h-full bg-gradient-to-r from-teal-450 to-cyan-400"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

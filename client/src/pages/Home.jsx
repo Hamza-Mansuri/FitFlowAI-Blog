@@ -4,10 +4,10 @@ import Hero from "../components/common/Hero";
 import SearchBar from "../components/common/SearchBar";
 import CategoryList from "../components/common/CategoryList";
 import FeaturedBlog from "../components/blog/FeaturedBlog";
-import Testimonials from "../components/common/Testimonials";
+import ClientReviews from "../components/common/ClientReviews";
+import ToolsReel from "../components/common/ToolsReel";
 import TrendingBlogs from "../components/blog/TrendingBlogs";
 import FinalCTA from "../components/common/FinalCTA";
-import Newsletter from "../components/common/Newsletter";
 import Footer from "../components/layout/Footer";
 import Stats from "../components/common/Stats";
 import API from "../services/api";
@@ -94,7 +94,7 @@ function Home() {
         {/* Animated background glows */}
         <GlowBackground />
 
-        <div className="relative z-10 space-y-10 md:space-y-14 pb-12">
+        <div className="relative z-10 space-y-6 md:space-y-8 pb-8">
           <Hero />
           
           <div className="relative z-10">
@@ -102,7 +102,11 @@ function Home() {
           </div>
 
           <div className="relative z-10">
-            <Testimonials />
+            <ClientReviews />
+          </div>
+
+          <div className="relative z-10">
+            <ToolsReel />
           </div>
 
           <div className="relative z-10">
@@ -126,10 +130,6 @@ function Home() {
 
           <div className="relative z-10">
             <FinalCTA />
-          </div>
-
-          <div className="relative z-10">
-            <Newsletter />
           </div>
 
           <Footer />

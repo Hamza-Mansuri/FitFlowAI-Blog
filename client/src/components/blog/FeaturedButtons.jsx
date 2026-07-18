@@ -21,7 +21,7 @@ function FeaturedButtons({ blogId }) {
       <motion.button
         whileHover={{ scale: 1.025, y: -2 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-800 bg-transparent px-8 py-4 text-sm font-bold text-slate-350 transition-all duration-300 hover:text-white hover:bg-slate-900/60 hover:border-slate-700 cursor-pointer"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-transparent px-8 py-4 text-sm font-bold text-slate-700 dark:text-slate-350 transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer"
       >
         <FaRegBookmark className="text-xs text-emerald-400" />
         <span>Bookmark</span>
