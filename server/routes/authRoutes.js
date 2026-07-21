@@ -4,6 +4,11 @@ import {
   loginUser,
   loginAdmin,
   verifyAdmin,
+  testEmail,
+  forgotPassword,
+  verifyOTP,
+  resetPassword,
+  resendOTP,
 } from "../controllers/authController.js";
 
 import protect from "../middleware/authMiddleware.js";
@@ -29,5 +34,15 @@ router.get(
     res.status(200).json(req.user);
   }
 );
+
+router.post("/test-email", testEmail);
+
+router.post("/forgot-password", forgotPassword);
+
+router.post("/verify-otp", verifyOTP);
+
+router.post("/reset-password", resetPassword);
+
+router.post("/resend-otp", resendOTP);
 
 export default router;

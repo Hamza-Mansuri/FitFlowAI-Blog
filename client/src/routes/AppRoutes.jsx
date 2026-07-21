@@ -32,6 +32,8 @@ import AICoachWorkspace from "../pages/AICoachWorkspace";
 
 import ProtectedRoute from "../components/common/ProtectedRoute";
 
+import ForgotPassword from "../pages/ForgotPassword";
+
 const UserRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
@@ -211,6 +213,13 @@ function AppRoutes() {
           <ProtectedRoute>
             <AdminDashboard />
           </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/forgot-password"
+        element={
+          user ? <Navigate to="/" replace /> : <ForgotPassword />
         }
       />
 

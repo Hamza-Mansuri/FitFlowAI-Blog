@@ -36,7 +36,7 @@ function Login() {
     try {
       setLoading(true);
       const user = await loginUser(formData.email, formData.password);
-      
+
       if (user.role === "admin") {
         toast.success(`Welcome back, Admin ${user.name}!`);
         navigate("/admin");
@@ -55,7 +55,7 @@ function Login() {
 
   return (
     <PageTransition>
-      <SEO 
+      <SEO
         title="Login | FitFlowAI"
         description="Sign in to your FitFlowAI account to access workout guides, nutrition plans, and article updates."
       />
@@ -81,7 +81,7 @@ function Login() {
             >
               <FaRunning className="text-3xl" />
             </motion.div>
-            
+
             <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Welcome Back
             </h1>
@@ -130,6 +130,15 @@ function Login() {
               >
                 {showPassword ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
               </button>
+            </div>
+
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm font-medium text-green-500 hover:text-green-600 hover:underline"
+              >
+                Forgot Password?
+              </Link>
             </div>
 
             {/* Submit Button */}
