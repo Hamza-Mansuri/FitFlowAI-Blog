@@ -89,7 +89,7 @@ function TrendingBlogs({ blogs, loading }) {
 
         {/* Blog Grid or Skeletons */}
         {loading ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             {Array.from({ length: 6 }).map((_, idx) => (
               <BlogCardSkeleton key={idx} />
             ))}
@@ -101,7 +101,7 @@ function TrendingBlogs({ blogs, loading }) {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
-              className="grid gap-8 md:grid-cols-2 max-w-5xl mx-auto"
+              className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto"
             >
               <AnimatePresence mode="popLayout">
                 {currentBlogs.map((blog) => (

@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import Hero from "../components/common/Hero";
 import SearchBar from "../components/common/SearchBar";
 import CategoryList from "../components/common/CategoryList";
-import FeaturedBlog from "../components/blog/FeaturedBlog";
 import ClientReviews from "../components/common/ClientReviews";
 import ToolsReel from "../components/common/ToolsReel";
 import TrendingBlogs from "../components/blog/TrendingBlogs";
@@ -96,10 +95,6 @@ function Home() {
 
         <div className="relative z-10 space-y-6 md:space-y-8 pb-8">
           <Hero />
-          
-          <div className="relative z-10">
-            <FeaturedBlog blogs={blogs} />
-          </div>
 
           <div className="relative z-10">
             <ClientReviews />
