@@ -17,6 +17,8 @@ export default function LusionVideoSection() {
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [inView, setInView] = useState(false);
 
   // Monitor scroll for lines and scaling
   const { scrollYProgress } = useScroll({
@@ -33,16 +35,66 @@ export default function LusionVideoSection() {
   // Side drawing lines on scroll
   const sideLineLength = useTransform(scrollYProgress, [0.0, 0.4], [0, 1]);
 
+  // Detect mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Viewport intersection observer for mobile autoplay
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.15 }
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  // Control background preview video
   useEffect(() => {
     if (hoverVideoRef.current) {
-      if (isHovered && !isPlayingFullscreen) {
-        hoverVideoRef.current.play().catch(() => {});
+      if (isMobile) {
+        if (inView && !isPlayingFullscreen) {
+          hoverVideoRef.current.play().catch(() => {});
+        } else {
+          hoverVideoRef.current.pause();
+        }
       } else {
-        hoverVideoRef.current.pause();
-        hoverVideoRef.current.currentTime = 0;
+        if (isHovered && !isPlayingFullscreen) {
+          hoverVideoRef.current.play().catch(() => {});
+        } else {
+          hoverVideoRef.current.pause();
+          hoverVideoRef.current.currentTime = 0;
+        }
       }
     }
-  }, [isHovered, isPlayingFullscreen]);
+  }, [isHovered, isPlayingFullscreen, isMobile, inView]);
+
+  // Handle native fullscreen changes (to mute/unmute)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+      if (!isFullscreen && hoverVideoRef.current) {
+        hoverVideoRef.current.muted = true;
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
+    };
+  }, []);
 
   // Canvas ECG heartbeat animation
   useEffect(() => {
@@ -174,6 +226,32 @@ export default function LusionVideoSection() {
     return `${min}:${sec < 10 ? "0" : ""}${sec}`;
   };
 
+  const handleCardClick = () => {
+    if (isMobile) {
+      if (hoverVideoRef.current) {
+        // Unmute and request native fullscreen on mobile
+        hoverVideoRef.current.muted = false;
+        hoverVideoRef.current.play().then(() => {
+          const videoEl = hoverVideoRef.current;
+          if (videoEl.requestFullscreen) {
+            videoEl.requestFullscreen();
+          } else if (videoEl.webkitRequestFullscreen) {
+            videoEl.webkitRequestFullscreen();
+          } else if (videoEl.msRequestFullscreen) {
+            videoEl.msRequestFullscreen();
+          }
+        }).catch((err) => {
+          // Fallback to custom fullscreen if native fails
+          setIsPlayingFullscreen(true);
+        });
+      } else {
+        setIsPlayingFullscreen(true);
+      }
+    } else {
+      setIsPlayingFullscreen(true);
+    }
+  };
+
   // Splitting text for Lusion split-word effect
   const words = "Dynamic Flow Experience".split(" ");
 
@@ -279,7 +357,7 @@ export default function LusionVideoSection() {
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsPlayingFullscreen(true)}
+        onClick={handleCardClick}
         className="relative w-full max-w-5xl aspect-video overflow-hidden bg-black shadow-2xl border border-slate-100 flex items-center justify-center group cursor-none z-10"
         data-cursor="play"
       >
@@ -289,12 +367,12 @@ export default function LusionVideoSection() {
             src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=2070&auto=format&fit=cover"
             alt="Workout Intro"
             className={`w-full h-full object-cover transition-opacity duration-700 ${
-              isHovered ? "opacity-0" : "opacity-50"
+              (isHovered || (isMobile && inView)) ? "opacity-0" : "opacity-50"
             }`}
           />
         </div>
 
-        {/* Video plays on hover */}
+        {/* Video plays on hover/mobile intersection */}
         <video
           ref={hoverVideoRef}
           src={LUSION_VIDEO_URL}
@@ -302,7 +380,7 @@ export default function LusionVideoSection() {
           loop
           playsInline
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 pointer-events-none z-10 ${
-            isHovered ? "opacity-90" : "opacity-0"
+            (isHovered || (isMobile && inView)) ? "opacity-90" : "opacity-0"
           }`}
         />
 
