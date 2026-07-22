@@ -14,6 +14,7 @@ function FeaturedBlogCard({ blog, index }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [inView, setInView] = useState(false);
+  const [mobileVideoPlaying, setMobileVideoPlaying] = useState(false);
   const videoRef = useRef(null);
   const cardRef = useRef(null);
 
@@ -35,7 +36,7 @@ function FeaturedBlogCard({ blog, index }) {
       ([entry]) => {
         setInView(entry.isIntersecting);
       },
-      { threshold: 0.2 }
+      { threshold: 0.25 }
     );
 
     if (cardRef.current) {
@@ -47,12 +48,28 @@ function FeaturedBlogCard({ blog, index }) {
     };
   }, [isMobile]);
 
-  // Control video play/pause status
+  // Control video play/pause status and delay on mobile
   useEffect(() => {
+    let timer;
     if (videoRef.current) {
       if (isMobile) {
-        videoRef.current.pause();
+        if (inView) {
+          // Wait 2 seconds before fading in and playing the video
+          timer = setTimeout(() => {
+            setMobileVideoPlaying(true);
+            if (videoRef.current) {
+              videoRef.current.play().catch((err) => console.log("Mobile video playback prevented:", err));
+            }
+          }, 2000);
+        } else {
+          // Clear active timers, reset states, and pause video immediately when out of view
+          clearTimeout(timer);
+          setMobileVideoPlaying(false);
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
       } else {
+        // Desktop: immediate play/pause on hover
         if (isHovered) {
           videoRef.current.play().catch((err) => console.log("Desktop video autoplay prevented:", err));
         } else {
@@ -61,7 +78,8 @@ function FeaturedBlogCard({ blog, index }) {
         }
       }
     }
-  }, [isHovered, isMobile]);
+    return () => clearTimeout(timer);
+  }, [isHovered, isMobile, inView]);
 
   const activeVideo = blog.videoUrl || FALLBACK_VIDEOS_BLACK[index % FALLBACK_VIDEOS_BLACK.length];
   // Apply staggered vertical translation to create a zig-zag column offset
@@ -107,23 +125,25 @@ function FeaturedBlogCard({ blog, index }) {
           src={blog.image}
           alt={blog.title}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            (!isMobile && isHovered) ? "opacity-0" : "opacity-100"
+            isMobile
+              ? (mobileVideoPlaying ? "opacity-0" : "opacity-100")
+              : (isHovered ? "opacity-0" : "opacity-100")
           }`}
         />
 
-        {/* Video Player (Desktop Only) */}
-        {!isMobile && (
-          <video
-            ref={videoRef}
-            src={activeVideo}
-            loop
-            muted
-            playsInline
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-              isHovered ? "opacity-100" : "opacity-0"
-            }`}
-          />
-        )}
+        {/* Video Player */}
+        <video
+          ref={videoRef}
+          src={activeVideo}
+          loop
+          muted
+          playsInline
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+            isMobile
+              ? (mobileVideoPlaying ? "opacity-100" : "opacity-0")
+              : (isHovered ? "opacity-100" : "opacity-0")
+          }`}
+        />
 
         <div className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
           HOVER FOR VIDEO

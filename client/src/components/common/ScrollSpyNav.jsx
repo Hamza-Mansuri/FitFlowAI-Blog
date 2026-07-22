@@ -129,16 +129,16 @@ export function ScrollSpyNav() {
         </div>
       </motion.div>
 
-      {/* MOBILE FLOATING JUMP BUTTON */}
-      <div className="md:hidden fixed bottom-6 right-6 z-40">
+      {/* MOBILE FLOATING JUMP BUTTON (Bottom Left to avoid AI chatbot overlap) */}
+      <div className="md:hidden fixed bottom-6 left-6 z-40">
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setMobileMenuOpen(true)}
-          className="flex items-center gap-2 bg-slate-900 text-white shadow-xl px-5 py-3.5 rounded-full border border-slate-800 text-xs font-black uppercase tracking-wider cursor-pointer"
+          className="flex h-12 w-12 items-center justify-center bg-white/95 backdrop-blur-md text-slate-850 shadow-[0_10px_25px_rgba(0,0,0,0.12)] rounded-full border border-slate-200 cursor-pointer"
+          aria-label="Jump to Section"
         >
-          <FaListUl size={12} className="text-emerald-500" />
-          <span>Jump to Section</span>
+          <FaListUl size={14} className="text-emerald-600" />
         </motion.button>
       </div>
 
