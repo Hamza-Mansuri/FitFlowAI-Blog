@@ -1,15 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaArrowRight, FaCheck, FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import API from "../../services/api";
 import Container from "../layout/Container";
 
-function FinalCTA() {
+gsap.registerPlugin(ScrollTrigger);
+
+export function FinalCTA() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      gsap.set(".final-cta-card", { opacity: 1, y: 0 });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".final-cta-card",
+        { opacity: 0, y: 45 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -38,19 +72,13 @@ function FinalCTA() {
   };
 
   return (
-    <section className="py-10 md:py-14 relative overflow-hidden bg-transparent">
+    <section ref={containerRef} className="py-10 md:py-14 relative overflow-hidden bg-transparent">
       {/* Background soft glowing circles */}
       <div className="absolute right-[8%] top-[-10%] w-[45vw] h-[45vw] rounded-full bg-emerald-500/5 blur-[130px] pointer-events-none" />
       <div className="absolute left-[3%] bottom-[-10%] w-[40vw] h-[40vw] rounded-full bg-green-500/3 blur-[120px] pointer-events-none" />
 
       <Container className="max-w-[1360px] mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-[#052320]/95 via-[#083a35]/90 to-[#0b544d]/95 border border-emerald-500/10 shadow-2xl p-8 sm:p-12 lg:p-16 z-10"
-        >
+        <div className="final-cta-card relative overflow-hidden rounded-[2.5rem] bg-gradient-to-tr from-[#052320]/95 via-[#083a35]/90 to-[#0b544d]/95 border border-emerald-500/10 shadow-2xl p-8 sm:p-12 lg:p-16 z-10">
           {/* Subtle grid lines in background */}
           <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
 
@@ -156,7 +184,7 @@ function FinalCTA() {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </Container>
     </section>
   );

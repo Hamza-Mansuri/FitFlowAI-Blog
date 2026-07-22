@@ -49,6 +49,7 @@ export const createBlog = async (req, res) => {
         : [],
       image: req.file?.path || "",
       imagePublicId: req.file?.filename || "",
+      videoUrl: req.body.videoUrl || "",
     });
 
     // If logged in, push to creator's published blogs
@@ -199,6 +200,7 @@ export const updateBlog = async (req, res) => {
           : [],
         image: imagePath,
         imagePublicId: imagePublicId,
+        videoUrl: req.body.videoUrl || blog.videoUrl || "",
         views: blog.views, // preserve views
         likesCount: blog.likesCount, // preserve likes
         likes: blog.likes,
@@ -235,6 +237,7 @@ export const updateBlog = async (req, res) => {
     blog.readTime = req.body.readTime;
     blog.expertTip = req.body.expertTip;
     blog.content = req.body.content;
+    blog.videoUrl = req.body.videoUrl || "";
     blog.status = targetStatus;
     if (!isAdmin && targetStatus === "pending") {
       blog.rejectionReason = "";

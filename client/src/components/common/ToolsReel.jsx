@@ -214,7 +214,7 @@ function ToolsReel() {
   ], []);
 
   return (
-    <section className="py-10 md:py-16 relative overflow-hidden bg-slate-50/30 dark:bg-[#030708] transition-colors duration-500">
+    <section className="py-10 md:py-16 relative overflow-hidden bg-transparent transition-colors duration-500">
       {/* Background radial glow */}
       <div className="absolute left-[50%] top-[40%] -translate-x-1/2 -translate-y-1/2 w-[55vw] h-[55vw] rounded-full bg-emerald-500/[0.015] blur-[150px] pointer-events-none z-0" />
 

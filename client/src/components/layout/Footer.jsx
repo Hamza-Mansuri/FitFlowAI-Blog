@@ -21,7 +21,7 @@ function Footer() {
   ];
 
   return (
-    <footer className="relative mt-20 border-t border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-900/60 dark:bg-slate-950 dark:text-slate-400 overflow-hidden transition-colors duration-500">
+    <footer className="relative mt-20 border-t border-slate-200/50 bg-white/40 dark:bg-slate-950/40 backdrop-blur-md text-slate-600 dark:border-slate-900/40 dark:text-slate-400 overflow-hidden transition-colors duration-500">
       {/* Background radial accent glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] rounded-full bg-emerald-500/5 dark:bg-emerald-500/3 blur-[100px] pointer-events-none" />
 

@@ -33,6 +33,7 @@ function PublishBlog() {
     expertTip: "",
     content: "",
     takeaways: "",
+    videoUrl: "",
   });
 
   const categoriesList = [
@@ -65,6 +66,7 @@ function PublishBlog() {
             expertTip: data.expertTip || "",
             content: data.content || "",
             takeaways: data.takeaways ? data.takeaways.join("\n") : "",
+            videoUrl: data.videoUrl || "",
           });
           setPreview(data.image || "");
           setError("");
@@ -151,6 +153,7 @@ function PublishBlog() {
       data.append("readTime", formData.readTime);
       data.append("expertTip", formData.expertTip);
       data.append("takeaways", formData.takeaways);
+      data.append("videoUrl", formData.videoUrl);
 
       if (image) {
         data.append("image", image);
@@ -311,7 +314,18 @@ function PublishBlog() {
                 onChange={handleChange}
                 required
                 disabled={loading}
-                className="w-full rounded-xl border border-slate-350 bg-slate-50/55 px-4 py-3 transition duration-305 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-850 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
+                className="w-full rounded-xl border border-slate-355 bg-slate-50/55 px-4 py-3 transition duration-305 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-850 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
+              />
+
+              {/* Video URL */}
+              <input
+                type="url"
+                name="videoUrl"
+                placeholder="Cloudinary/Video Preview URL (Optional)"
+                value={formData.videoUrl}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full rounded-xl border border-slate-355 bg-slate-50/55 px-4 py-3 transition duration-305 outline-none hover:border-green-400 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 dark:border-slate-850 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-950"
               />
             </div>
 

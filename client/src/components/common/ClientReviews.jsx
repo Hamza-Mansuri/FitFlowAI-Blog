@@ -1,8 +1,14 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { FaStar } from "react-icons/fa";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Container from "../layout/Container";
 
-function ClientReviews() {
+gsap.registerPlugin(ScrollTrigger);
+
+export function ClientReviews() {
+  const sectionRef = useRef(null);
+
   const testimonials = [
     {
       name: "Marcus Vance",
@@ -41,45 +47,58 @@ function ClientReviews() {
     },
   ];
 
-  // Tripled list for a seamless marquee loop
   const listDouble = [...testimonials, ...testimonials, ...testimonials];
 
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const ctx = gsap.context(() => {
+      if (prefersReducedMotion) {
+        gsap.set(".reviews-fade-el", { opacity: 1, y: 0 });
+        return;
+      }
+
+      // Smooth heading slide/fade reveal
+      gsap.fromTo(
+        ".reviews-fade-el",
+        { opacity: 0, y: 25 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".reviews-header",
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="py-12 md:py-16 relative overflow-hidden bg-slate-50/20 dark:bg-transparent transition-colors duration-500">
+    <section ref={sectionRef} className="py-12 md:py-16 relative overflow-hidden bg-slate-50/20 dark:bg-transparent transition-colors duration-500">
       <Container>
         {/* Header Section */}
-        <div className="text-center mb-12 max-w-2xl mx-auto space-y-4">
-          <motion.span
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-[10px] uppercase font-bold tracking-[0.25em] text-emerald-600 dark:text-emerald-450"
-          >
+        <div className="reviews-header text-center mb-12 max-w-2xl mx-auto space-y-4">
+          <span className="reviews-fade-el inline-block text-[10px] uppercase font-bold tracking-[0.25em] text-emerald-600 dark:text-emerald-450">
             TESTIMONIALS
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight"
-          >
+          </span>
+          <h2 className="reviews-fade-el text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
             Trusted by Fitness Enthusiasts Worldwide
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-slate-600 dark:text-slate-400 text-sm md:text-base font-light leading-relaxed"
-          >
+          </h2>
+          <p className="reviews-fade-el text-slate-650 dark:text-slate-400 text-sm md:text-base font-light leading-relaxed">
             Thousands of readers improve their health every day with FitFlowAI's evidence-based fitness education.
-          </motion.p>
+          </p>
         </div>
       </Container>
 
-      {/* Horizontal Continuous Marquee Loop Wrapper with Left/Right Blur Masks */}
+      {/* Horizontal Continuous Marquee Loop */}
       <div className="w-full relative overflow-hidden mask-gradient-horizontal py-4">
         <div className="flex gap-6 animate-marquee-horizontal hover:[animation-play-state:paused] w-max px-6">
           {listDouble.map((item, idx) => (
@@ -87,7 +106,6 @@ function ClientReviews() {
               key={idx}
               className="w-[320px] sm:w-[350px] p-6 rounded-[2rem] border border-slate-200/60 dark:border-white/5 bg-white/70 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col gap-4 text-left transition-all duration-300 hover:border-emerald-500/25 dark:hover:border-emerald-500/25"
             >
-              {/* User Row */}
               <div className="flex items-center gap-3">
                 <img
                   src={item.avatar}
@@ -99,24 +117,22 @@ function ClientReviews() {
                   <span className="text-xs font-bold text-slate-900 dark:text-slate-200">
                     {item.name}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-500 font-semibold mt-0.5">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-550 font-semibold mt-0.5">
                     {item.country}
                   </span>
                 </div>
 
-                <span className="ml-auto text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="ml-auto text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20">
                   {item.tag}
                 </span>
               </div>
 
-              {/* Stars */}
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <FaStar key={i} className="text-amber-400" size={11} />
                 ))}
               </div>
 
-              {/* Quote */}
               <p className="text-xs leading-relaxed text-slate-650 dark:text-slate-400 font-light italic">
                 "{item.text}"
               </p>
@@ -125,7 +141,6 @@ function ClientReviews() {
         </div>
       </div>
 
-      {/* CSS Styles for Horizontal Marquee Scroll and Edge Masks */}
       <style>{`
         .mask-gradient-horizontal {
           mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
@@ -140,7 +155,7 @@ function ClientReviews() {
           }
         }
         .animate-marquee-horizontal {
-          animation: marquee-horizontal 30s linear infinite;
+          animation: marquee-horizontal 35s linear infinite;
         }
       `}</style>
     </section>

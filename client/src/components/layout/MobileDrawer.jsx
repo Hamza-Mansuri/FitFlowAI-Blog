@@ -2,7 +2,6 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaSignOutAlt } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
-import ThemeSwitcher from "./ThemeSwitcher";
 
 function MobileDrawer({ isOpen, onClose }) {
   const { user, logout } = useAuth();
@@ -101,15 +100,7 @@ function MobileDrawer({ isOpen, onClose }) {
               </nav>
             </div>
 
-            {/* Bottom Actions Row */}
             <div className="border-t border-slate-200/50 pt-6 dark:border-slate-800/40 space-y-5">
-              {/* Theme switch in drawer */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  Theme Mode
-                </span>
-                <ThemeSwitcher />
-              </div>
 
               {/* User profile actions */}
               {user ? (

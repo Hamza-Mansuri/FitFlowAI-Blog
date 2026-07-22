@@ -4,6 +4,10 @@ import BlogCard from "./BlogCard";
 import Container from "../layout/Container";
 import BlogCardSkeleton from "./BlogCardSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function TrendingBlogs({ blogs, loading }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,6 +16,36 @@ function TrendingBlogs({ blogs, loading }) {
   useEffect(() => {
     setCurrentPage(1);
   }, [blogs]);
+
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      gsap.set(".blogs-header-el", { opacity: 1, y: 0 });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        ".blogs-header-el",
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.9,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#blogs-grid-section",
+            start: "top 85%",
+            toggleActions: "play none none none",
+            once: true,
+          },
+        }
+      );
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   const totalPages = Math.ceil(blogs.length / blogsPerPage);
   const indexOfLastBlog = currentPage * blogsPerPage;
@@ -32,19 +66,6 @@ function TrendingBlogs({ blogs, loading }) {
     },
   };
 
-  const cardRevealVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1],
-      },
-    },
-  };
-
   return (
     <section id="blogs-grid-section" className="py-8 md:py-12 scroll-mt-20 relative overflow-hidden">
       {/* Background glow layers */}
@@ -54,12 +75,7 @@ function TrendingBlogs({ blogs, loading }) {
       <Container>
         {/* Section Header */}
         <div className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <div className="blogs-header-el">
             <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-xs font-bold text-emerald-450 backdrop-blur-md">
               📚 Latest Articles
             </span>
@@ -72,19 +88,13 @@ function TrendingBlogs({ blogs, loading }) {
               Explore practical guides on strength training, nutrition,
               fat loss, recovery, and healthy living.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.button 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            whileHover={{ scale: 1.025 }}
-            whileTap={{ scale: 0.975 }}
-            className="self-start md:self-end rounded-full border border-slate-200 bg-white/40 dark:border-slate-800 dark:bg-slate-950/40 px-6 py-3.5 text-xs font-bold text-slate-700 dark:text-slate-350 transition duration-300 hover:border-emerald-500 hover:text-emerald-500"
+          <button 
+            className="blogs-header-el self-start md:self-end rounded-full border border-slate-200 bg-white/40 dark:border-slate-800 dark:bg-slate-950/40 px-6 py-3.5 text-xs font-bold text-slate-700 dark:text-slate-350 transition duration-300 hover:border-emerald-500 hover:text-emerald-500"
           >
             View All Articles
-          </motion.button>
+          </button>
         </div>
 
         {/* Blog Grid or Skeletons */}

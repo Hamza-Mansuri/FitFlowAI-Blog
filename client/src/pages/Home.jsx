@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Hero from "../components/common/Hero";
+import AboutSection from "../components/common/AboutSection";
 import SearchBar from "../components/common/SearchBar";
 import CategoryList from "../components/common/CategoryList";
 import ClientReviews from "../components/common/ClientReviews";
-import ToolsReel from "../components/common/ToolsReel";
 import TrendingBlogs from "../components/blog/TrendingBlogs";
 import FinalCTA from "../components/common/FinalCTA";
 import Footer from "../components/layout/Footer";
-import Stats from "../components/common/Stats";
 import API from "../services/api";
 import SEO from "../components/common/SEO";
 import { SITE_URL } from "../config/site";
 import { useAuth } from "../context/AuthContext";
 import PageTransition from "../components/common/PageTransition";
-import GlowBackground from "../components/common/GlowBackground";
+import LusionVideoSection from "../components/common/LusionVideoSection";
+import FeaturedBlogsCuberto from "../components/common/FeaturedBlogsCuberto";
+import AstronautFooterAnimation from "../components/common/AstronautFooterAnimation";
+
 
 function Home() {
   const { user } = useAuth();
@@ -89,24 +91,17 @@ function Home() {
         url={SITE_URL}
       />
 
-      <div className="relative bg-slate-50/50 transition-colors duration-500 dark:bg-[#05070d] min-h-screen overflow-hidden">
-        {/* Animated background glows */}
-        <GlowBackground />
-
+      <div className="relative bg-slate-950 min-h-screen overflow-hidden">
         <div className="relative z-10 space-y-6 md:space-y-8 pb-8">
           <Hero />
+          <LusionVideoSection />
+          <AboutSection />
 
           <div className="relative z-10">
             <ClientReviews />
           </div>
 
-          <div className="relative z-10">
-            <ToolsReel />
-          </div>
-
-          <div className="relative z-10">
-            <Stats />
-          </div>
+          <FeaturedBlogsCuberto />
 
           <div className="space-y-12 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <CategoryList
@@ -127,6 +122,7 @@ function Home() {
             <FinalCTA />
           </div>
 
+          <AstronautFooterAnimation />
           <Footer />
         </div>
       </div>

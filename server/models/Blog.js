@@ -106,6 +106,11 @@ const blogSchema = new mongoose.Schema({
     default: [],
   },
 
+  videoUrl: {
+    type: String,
+    default: "",
+  },
+
   embedding: {
     type: [Number],
     default: [],
