@@ -58,20 +58,20 @@ export function HeroContent({ slide, active, triggerAnimation }) {
       <div className="max-w-4xl flex flex-col items-center">
         <h1 
           ref={headingRef}
-          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white tracking-tight uppercase leading-[1.05] mb-6 opacity-0"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 tracking-tight uppercase leading-[1.05] mb-6 opacity-0"
         >
           {slide.heading}
         </h1>
         
         <p 
           ref={subheadingRef}
-          className="text-base sm:text-lg md:text-xl text-white/80 font-light max-w-2xl leading-relaxed mb-10 opacity-0"
+          className="text-base sm:text-lg md:text-xl text-slate-700 font-light max-w-2xl leading-relaxed mb-10 opacity-0"
         >
           {slide.subheading}
         </p>
 
         <div ref={buttonRef} className="opacity-0 pointer-events-auto">
-          <button className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wider text-black bg-white rounded-full transition-all duration-300 hover:bg-black hover:text-white border border-white hover:border-white/20 active:scale-95 shadow-[0_8px_30px_rgb(255,255,255,0.15)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)]">
+          <button className="relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 rounded-full transition-all duration-300 hover:scale-103 active:scale-97 shadow-[0_8px_25px_rgba(16,185,129,0.25)]">
             {slide.button}
           </button>
         </div>

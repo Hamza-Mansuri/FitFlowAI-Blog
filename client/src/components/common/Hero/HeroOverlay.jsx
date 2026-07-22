@@ -8,7 +8,7 @@ import React from "react";
 export function HeroOverlay() {
   return (
     <div 
-      className="absolute inset-0 bg-gradient-to-t from-[#0a0d14]/60 via-[#0a0d14]/25 to-[#0a0d14]/40 pointer-events-none z-10" 
+      className="absolute inset-0 bg-gradient-to-t from-[#ffffff]/85 via-[#ffffff]/15 to-[#ffffff]/45 pointer-events-none z-10" 
       aria-hidden="true"
     />
   );

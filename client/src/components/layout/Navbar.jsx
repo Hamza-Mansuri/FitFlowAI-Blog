@@ -191,7 +191,7 @@ export function Navbar() {
                   <MagneticWrapper>
                     <Link
                       to="/signup"
-                      className="rounded-full bg-slate-900 px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition duration-300 border border-slate-700/50 hover:border-cyan-500/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.2)] bg-gradient-to-r hover:from-slate-900 hover:to-slate-800"
+                      className="rounded-full bg-emerald-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition duration-305 hover:bg-emerald-700 shadow-sm"
                     >
                       Register
                     </Link>

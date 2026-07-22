@@ -9,12 +9,13 @@ import CustomCursor from "./components/common/CustomCursor";
 function App() {
   const location = useLocation();
   const isBleedRoute = location.pathname === "/" || location.pathname === "/landing";
+  const isLandingRoute = location.pathname === "/landing";
 
   return (
     <>
       <CustomCursor />
       <ScrollToTop />
-      <Navbar />
+      {!isLandingRoute && <Navbar />}
       <div className={isBleedRoute ? "" : "pt-24 sm:pt-28"}>
         <AppRoutes />
       </div>

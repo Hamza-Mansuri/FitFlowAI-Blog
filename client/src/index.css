@@ -64,17 +64,12 @@ html {
 
 body {
   font-family: "Outfit", "Poppins", sans-serif;
-  background-color: #fafbfc;
-  color: #0f172a;
+  background-color: #ffffff;
+  color: #111827;
   overflow-x: hidden;
   transition:
     background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dark body {
-  background-color: #05070d;
-  color: #f1f5f9;
 }
 
 img {
@@ -125,41 +120,28 @@ textarea {
 
 /* Custom premium styles */
 .premium-glass {
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.dark .premium-glass {
-  background: rgba(10, 15, 28, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .premium-glass-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(241, 245, 249, 0.9);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
+  border-radius: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.dark .premium-glass-card {
-  background: rgba(13, 20, 35, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+.premium-glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04), 0 4px 8px rgba(0, 0, 0, 0.02);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 .premium-glow-green {
-  box-shadow: 0 0 40px 5px rgba(34, 197, 94, 0.06);
-}
-
-.dark .premium-glow-green {
-  box-shadow: 0 0 50px 10px rgba(34, 197, 94, 0.04);
+  box-shadow: 0 0 40px 5px rgba(34, 197, 94, 0.04);
 }
 
 /* Beautiful Rich Text Fallbacks (.prose styles) */
@@ -169,7 +151,7 @@ textarea {
 .prose h4,
 .prose h5,
 .prose h6 {
-  color: #0f172a !important; /* text-slate-900 */
+  color: #111827 !important; /* text-slate-900 */
   font-weight: 700 !important;
   margin-top: 2.5rem !important;
   margin-bottom: 1.25rem !important;
@@ -177,12 +159,12 @@ textarea {
 }
 
 .prose h1 { font-size: 2.5rem !important; }
-.prose h2 { font-size: 1.85rem !important; border-bottom: 1px solid rgba(226, 232, 240, 0.8); padding-bottom: 0.5rem; }
+.prose h2 { font-size: 1.85rem !important; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem; }
 .prose h3 { font-size: 1.5rem !important; }
 .prose h4 { font-size: 1.25rem !important; }
 
 .prose p {
-  color: #334155 !important; /* text-slate-700 */
+  color: #4b5563 !important; /* text-slate-700 */
   margin-top: 0 !important;
   margin-bottom: 1.75rem !important;
   line-height: 1.85 !important;
@@ -197,7 +179,7 @@ textarea {
 }
 
 .prose li {
-  color: #334155 !important;
+  color: #4b5563 !important;
   margin-top: 0.6rem !important;
   margin-bottom: 0.6rem !important;
   line-height: 1.85 !important;
@@ -210,7 +192,7 @@ textarea {
 }
 
 .prose strong {
-  color: #0f172a !important;
+  color: #111827 !important;
   font-weight: 700 !important;
 }
 
@@ -219,35 +201,10 @@ textarea {
   border-left-color: #10b981 !important; /* emerald-500 */
   padding-left: 1.5rem !important;
   font-style: italic !important;
-  color: #475569 !important;
+  color: #4b5563 !important;
   margin: 2.5rem 0 !important;
-  background-color: rgba(241, 245, 249, 0.5);
+  background-color: #f8fafc;
   border-radius: 0 1rem 1rem 0;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-}
-
-/* Dark Mode Overrides */
-.dark .prose h1,
-.dark .prose h2,
-.dark .prose h3,
-.dark .prose h4,
-.dark .prose h5,
-.dark .prose h6 {
-  color: #f1f5f9 !important;
-  border-color: rgba(51, 65, 85, 0.4) !important;
-}
-
-.dark .prose p,
-.dark .prose li {
-  color: #cbd5e1 !important;
-}
-
-.dark .prose strong {
-  color: #ffffff !important;
-}
-
-.dark .prose blockquote {
-  background-color: rgba(15, 23, 42, 0.4);
-  color: #94a3b8 !important;
 }

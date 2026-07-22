@@ -51,11 +51,7 @@ function FeaturedBlogCard({ blog, index }) {
   useEffect(() => {
     if (videoRef.current) {
       if (isMobile) {
-        if (inView) {
-          videoRef.current.play().catch((err) => console.log("Mobile video autoplay prevented:", err));
-        } else {
-          videoRef.current.pause();
-        }
+        videoRef.current.pause();
       } else {
         if (isHovered) {
           videoRef.current.play().catch((err) => console.log("Desktop video autoplay prevented:", err));
@@ -65,7 +61,7 @@ function FeaturedBlogCard({ blog, index }) {
         }
       }
     }
-  }, [isHovered, isMobile, inView]);
+  }, [isHovered, isMobile]);
 
   const activeVideo = blog.videoUrl || FALLBACK_VIDEOS_BLACK[index % FALLBACK_VIDEOS_BLACK.length];
   // Apply staggered vertical translation to create a zig-zag column offset
@@ -111,21 +107,23 @@ function FeaturedBlogCard({ blog, index }) {
           src={blog.image}
           alt={blog.title}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            (isHovered || (isMobile && inView)) ? "opacity-0" : "opacity-100"
+            (!isMobile && isHovered) ? "opacity-0" : "opacity-100"
           }`}
         />
 
-        {/* Video Player */}
-        <video
-          ref={videoRef}
-          src={activeVideo}
-          loop
-          muted
-          playsInline
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            (isHovered || (isMobile && inView)) ? "opacity-100" : "opacity-0"
-          }`}
-        />
+        {/* Video Player (Desktop Only) */}
+        {!isMobile && (
+          <video
+            ref={videoRef}
+            src={activeVideo}
+            loop
+            muted
+            playsInline
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+              isHovered ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
 
         <div className="absolute bottom-4 right-4 bg-emerald-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300">
           HOVER FOR VIDEO

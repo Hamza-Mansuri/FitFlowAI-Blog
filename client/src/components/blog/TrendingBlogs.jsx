@@ -75,23 +75,23 @@ function TrendingBlogs({ blogs, loading }) {
       <Container>
         {/* Section Header */}
         <div className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="blogs-header-el">
-            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-xs font-bold text-emerald-450 backdrop-blur-md">
+          <div className="blogs-header-el text-left">
+            <span className="rounded-full bg-emerald-600/10 border border-emerald-500/20 px-4 py-1.5 text-xs font-bold text-emerald-700 backdrop-blur-md">
               📚 Latest Articles
             </span>
 
-            <h2 className="mt-5 text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="mt-5 text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
               Learn From Fitness Experts
             </h2>
 
-            <p className="mt-3 max-w-xl text-sm md:text-base leading-relaxed text-slate-500 dark:text-slate-400 font-light">
+            <p className="mt-3 max-w-xl text-sm md:text-base leading-relaxed text-slate-600 font-light">
               Explore practical guides on strength training, nutrition,
               fat loss, recovery, and healthy living.
             </p>
           </div>
 
           <button 
-            className="blogs-header-el self-start md:self-end rounded-full border border-slate-200 bg-white/40 dark:border-slate-800 dark:bg-slate-950/40 px-6 py-3.5 text-xs font-bold text-slate-700 dark:text-slate-350 transition duration-300 hover:border-emerald-500 hover:text-emerald-500"
+            className="blogs-header-el self-start md:self-end rounded-full border border-slate-200 bg-white px-6 py-3.5 text-xs font-bold text-slate-700 transition duration-300 hover:bg-slate-50 hover:border-emerald-650 hover:text-emerald-650"
           >
             View All Articles
           </button>
@@ -137,7 +137,7 @@ function TrendingBlogs({ blogs, loading }) {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white/60 text-slate-600 transition shadow-sm hover:border-emerald-500 hover:text-emerald-500 disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:text-slate-650 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400 dark:hover:border-emerald-500"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-650 transition shadow-sm hover:border-emerald-650 hover:text-emerald-650 disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:text-slate-650"
                 >
                   <FaChevronLeft size={10} />
                 </motion.button>
@@ -150,8 +150,8 @@ function TrendingBlogs({ blogs, loading }) {
                     onClick={() => handlePageChange(page)}
                     className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold transition shadow-sm ${
                       currentPage === page
-                        ? "bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-md shadow-emerald-500/20"
-                        : "border border-slate-200 bg-white/60 text-slate-600 hover:border-emerald-500 hover:text-emerald-500 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-450 dark:hover:border-emerald-500"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "border border-slate-200 bg-white text-slate-600 hover:border-emerald-650 hover:text-emerald-650"
                     }`}
                   >
                     {page}
@@ -163,7 +163,7 @@ function TrendingBlogs({ blogs, loading }) {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white/60 text-slate-600 transition shadow-sm hover:border-emerald-500 hover:text-emerald-500 disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:text-slate-650 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400 dark:hover:border-emerald-500"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-655 transition shadow-sm hover:border-emerald-655 hover:text-emerald-655 disabled:opacity-45 disabled:hover:border-slate-200 disabled:hover:text-emerald-655"
                 >
                   <FaChevronRight size={10} />
                 </motion.button>
@@ -174,13 +174,13 @@ function TrendingBlogs({ blogs, loading }) {
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="rounded-[2rem] border border-dashed border-slate-200 py-20 text-center dark:border-slate-800 bg-white/20 backdrop-blur-sm"
+            className="rounded-[2rem] border border-dashed border-slate-200 py-20 text-center bg-slate-50"
           >
-            <h3 className="text-xl font-bold text-slate-800 dark:text-white">
+            <h3 className="text-xl font-bold text-slate-800">
               No Articles Found
             </h3>
 
-            <p className="mt-2.5 text-sm text-slate-500 dark:text-slate-400 font-light">
+            <p className="mt-2.5 text-sm text-slate-500 font-light">
               Try another keyword or browse a different category.
             </p>
           </motion.div>

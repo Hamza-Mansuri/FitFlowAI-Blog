@@ -82,17 +82,17 @@ export function ClientReviews() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-12 md:py-16 relative overflow-hidden bg-slate-50/20 dark:bg-transparent transition-colors duration-500">
+    <section ref={sectionRef} className="py-12 md:py-16 relative overflow-hidden bg-[#F8FAFC] transition-colors duration-500">
       <Container>
         {/* Header Section */}
         <div className="reviews-header text-center mb-12 max-w-2xl mx-auto space-y-4">
-          <span className="reviews-fade-el inline-block text-[10px] uppercase font-bold tracking-[0.25em] text-emerald-600 dark:text-emerald-450">
+          <span className="reviews-fade-el inline-block text-[10px] uppercase font-bold tracking-[0.25em] text-emerald-600">
             TESTIMONIALS
           </span>
-          <h2 className="reviews-fade-el text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-            Trusted by Fitness Enthusiasts Worldwide
+          <h2 className="reviews-fade-el text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+            Trusted by Fitness Enthusiasts
           </h2>
-          <p className="reviews-fade-el text-slate-650 dark:text-slate-400 text-sm md:text-base font-light leading-relaxed">
+          <p className="reviews-fade-el text-slate-600 text-sm md:text-base font-light leading-relaxed">
             Thousands of readers improve their health every day with FitFlowAI's evidence-based fitness education.
           </p>
         </div>
@@ -104,25 +104,25 @@ export function ClientReviews() {
           {listDouble.map((item, idx) => (
             <div
               key={idx}
-              className="w-[320px] sm:w-[350px] p-6 rounded-[2rem] border border-slate-200/60 dark:border-white/5 bg-white/70 dark:bg-slate-950/40 backdrop-blur-xl shadow-xl flex flex-col gap-4 text-left transition-all duration-300 hover:border-emerald-500/25 dark:hover:border-emerald-500/25"
+              className="w-[320px] sm:w-[350px] p-6 rounded-[2rem] border border-slate-200 bg-white shadow-sm flex flex-col gap-4 text-left transition-all duration-300 hover:border-emerald-500/25 hover:shadow-md"
             >
               <div className="flex items-center gap-3">
                 <img
                   src={item.avatar}
                   alt={item.name}
                   loading="lazy"
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-white/10"
+                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
                 />
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-900 dark:text-slate-200">
+                  <span className="text-xs font-bold text-slate-900">
                     {item.name}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-550 font-semibold mt-0.5">
+                  <span className="text-[10px] text-slate-500 mt-0.5">
                     {item.country}
                   </span>
                 </div>
 
-                <span className="ml-auto text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20">
+                <span className="ml-auto text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                   {item.tag}
                 </span>
               </div>
@@ -133,7 +133,7 @@ export function ClientReviews() {
                 ))}
               </div>
 
-              <p className="text-xs leading-relaxed text-slate-650 dark:text-slate-400 font-light italic">
+              <p className="text-xs leading-relaxed text-slate-600 font-light italic">
                 "{item.text}"
               </p>
             </div>

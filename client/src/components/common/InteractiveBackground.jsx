@@ -10,8 +10,8 @@ const LineShaderMaterial = {
     uMouseStrength: { value: 2.2 },
     uRadius: { value: 4.5 },
     uColorEmerald: { value: new THREE.Color("#10b981") },
-    uColorCyan: { value: new THREE.Color("#06b6d4") },
-    uColorGlow: { value: new THREE.Color("#ffffff") },
+    uColorCyan: { value: new THREE.Color("#3b82f6") },
+    uColorGlow: { value: new THREE.Color("#a7f3d0") },
   },
   vertexShader: `
     uniform float uTime;
@@ -73,7 +73,7 @@ const LineShaderMaterial = {
     varying vec3 vWorldPosition;
 
     void main() {
-      // Create a gradient across the screen (emerald to cyan)
+      // Create a gradient across the screen (emerald to cyan/blue)
       float mixFactor = (vWorldPosition.x + 16.0) / 32.0;
       mixFactor = clamp(mixFactor, 0.0, 1.0);
       
@@ -85,11 +85,11 @@ const LineShaderMaterial = {
       float edgeFade = sin(vPointIndex * 3.14159265);
       edgeFade = pow(edgeFade, 1.5);
 
-      // Add soft white glow at peak heights
+      // Add soft glow at peak heights
       float glowFactor = abs(sin(vWorldPosition.y * 0.4 + vWorldPosition.x * 0.1)) * 0.2;
       vec3 finalColor = mix(baseColor, uColorGlow, glowFactor);
 
-      gl_FragColor = vec4(finalColor, edgeFade * 0.38);
+      gl_FragColor = vec4(finalColor, edgeFade * 0.12);
     }
   `,
 };
@@ -102,8 +102,8 @@ const ParticleShaderMaterial = {
     uMouseStrength: { value: 2.2 },
     uRadius: { value: 4.5 },
     uColorEmerald: { value: new THREE.Color("#10b981") },
-    uColorCyan: { value: new THREE.Color("#06b6d4") },
-    uColorGlow: { value: new THREE.Color("#ffffff") },
+    uColorCyan: { value: new THREE.Color("#3b82f6") },
+    uColorGlow: { value: new THREE.Color("#a7f3d0") },
   },
   vertexShader: `
     uniform float uTime;
@@ -175,12 +175,12 @@ const ParticleShaderMaterial = {
       mixFactor = clamp(mixFactor, 0.0, 1.0);
       vec3 color = mix(uColorEmerald, uColorCyan, mixFactor);
       
-      // Interpolate with white for bright glowing core
+      // Interpolate with white for bright core
       color = mix(color, uColorGlow, 0.4);
 
       // Fade out particles near borders
       float edgeFade = sin(vProgress * 3.14159265);
-      float alpha = smoothstep(0.5, 0.2, dist) * edgeFade * 0.85;
+      float alpha = smoothstep(0.5, 0.2, dist) * edgeFade * 0.15;
 
       gl_FragColor = vec4(color, alpha);
     }
@@ -305,7 +305,7 @@ function AnimationScene({ mouse, isMobile }) {
         <shaderMaterial
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={THREE.NormalBlending}
           args={[LineShaderMaterial]}
         />
       </lineSegments>
@@ -333,7 +333,7 @@ function AnimationScene({ mouse, isMobile }) {
         <shaderMaterial
           transparent
           depthWrite={false}
-          blending={THREE.AdditiveBlending}
+          blending={THREE.NormalBlending}
           args={[ParticleShaderMaterial]}
         />
       </points>
@@ -371,7 +371,7 @@ export function InteractiveBackground() {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-[#0a0d14] z-0">
+    <div className="absolute inset-0 w-full h-full bg-white z-0">
       <Canvas
         camera={{ position: [0, 0, 10], fov: 60 }}
         gl={{
@@ -382,15 +382,15 @@ export function InteractiveBackground() {
         dpr={[1, 2]}
         className="w-full h-full"
       >
-        <color attach="background" args={["#0a0d14"]} />
+        <color attach="background" args={["#ffffff"]} />
         <ambientLight intensity={1.5} />
         <AnimationScene mouse={mouse} isMobile={isMobile} />
       </Canvas>
-      {/* Premium dark grid overlay effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
+      {/* Premium light grid overlay effect */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none" />
       
       {/* Soft gradient vignetting for premium background feel */}
-      <div className="absolute inset-0 bg-radial-[circle_at_center,transparent_30%,#0a0d14_95%] pointer-events-none" />
+      <div className="absolute inset-0 bg-radial-[circle_at_center,transparent_30%,#ffffff_95%] pointer-events-none" />
     </div>
   );
 }

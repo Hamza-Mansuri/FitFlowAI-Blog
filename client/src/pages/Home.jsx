@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Hero from "../components/common/Hero";
 import AboutSection from "../components/common/AboutSection";
@@ -16,6 +16,10 @@ import PageTransition from "../components/common/PageTransition";
 import LusionVideoSection from "../components/common/LusionVideoSection";
 import FeaturedBlogsCuberto from "../components/common/FeaturedBlogsCuberto";
 import AstronautFooterAnimation from "../components/common/AstronautFooterAnimation";
+import DecorativeSectionWrapper from "../components/common/DecorativeSectionWrapper";
+import BotanicalBackground from "../components/common/BotanicalBackground";
+import DecorativeBranch from "../components/common/DecorativeBranch";
+import ScrollSpyNav from "../components/common/ScrollSpyNav";
 
 
 function Home() {
@@ -26,6 +30,8 @@ function Home() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "All");
   const [loading, setLoading] = useState(true);
+
+  const exploreSectionRef = useRef(null);
 
   // Sync state when search parameters change (e.g. from Navbar searches)
   useEffect(() => {
@@ -91,41 +97,80 @@ function Home() {
         url={SITE_URL}
       />
 
-      <div className="relative bg-slate-950 min-h-screen overflow-hidden">
+      <BotanicalBackground>
+        <ScrollSpyNav />
         <div className="relative z-10 space-y-6 md:space-y-8 pb-8">
-          <Hero />
-          <LusionVideoSection />
-          <AboutSection />
-
-          <div className="relative z-10">
-            <ClientReviews />
+          <div id="hero">
+            <Hero />
+          </div>
+          
+          <div id="flow-experience">
+            <DecorativeSectionWrapper side="left" variant="A" size="large">
+              <LusionVideoSection />
+            </DecorativeSectionWrapper>
           </div>
 
-          <FeaturedBlogsCuberto />
+          <div id="philosophy">
+            <AboutSection />
+          </div>
 
-          <div className="space-y-12 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-            <CategoryList
-              selectedCategory={selectedCategory}
-              setSelectedCategory={handleSetCategory}
+          <div id="testimonials">
+            <DecorativeSectionWrapper side="left" variant="B" size="medium">
+              <ClientReviews />
+            </DecorativeSectionWrapper>
+          </div>
+
+          <div id="featured-stories">
+            <DecorativeSectionWrapper side="right" variant="D" size="small">
+              <FeaturedBlogsCuberto />
+            </DecorativeSectionWrapper>
+          </div>
+
+          {/* Explore Topics & Learn From Fitness Experts wrapped in dual growing mint branches */}
+          <section ref={exploreSectionRef} id="latest-articles" className="relative w-full overflow-hidden py-10">
+            <DecorativeBranch
+              side="left"
+              variant="C"
+              opacity={0.35}
+              scrub={true}
+              customHeight="92%"
+              triggerRef={exploreSectionRef}
             />
-            <SearchBar
-              search={search}
-              setSearch={handleSetSearch}
+            <DecorativeBranch
+              side="right"
+              variant="C"
+              opacity={0.35}
+              scrub={true}
+              customHeight="92%"
+              triggerRef={exploreSectionRef}
             />
-          </div>
 
-          <div className="relative z-10">
-            <TrendingBlogs blogs={filteredBlogs} loading={loading} />
-          </div>
+            <div className="space-y-12 max-w-7xl mx-auto px-4 sm:px-6 relative z-10 pb-10">
+              <CategoryList
+                selectedCategory={selectedCategory}
+                setSelectedCategory={handleSetCategory}
+              />
+              <SearchBar
+                search={search}
+                setSearch={handleSetSearch}
+              />
+            </div>
 
-          <div className="relative z-10">
-            <FinalCTA />
+            <div className="relative z-10">
+              <TrendingBlogs blogs={filteredBlogs} loading={loading} />
+            </div>
+          </section>
+
+          <div id="strongest-self">
+            <DecorativeSectionWrapper side="right" variant="C" size="small">
+              <FinalCTA />
+            </DecorativeSectionWrapper>
           </div>
 
           <AstronautFooterAnimation />
           <Footer />
         </div>
-      </div>
+      </BotanicalBackground>
     </PageTransition>
   );
 }

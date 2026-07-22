@@ -53,11 +53,11 @@ function Landing() {
         description="Unlock your physical potential with evidence-based guides, dynamic workouts, and personalized fitness tools."
       />
 
-      <div className="relative min-h-screen bg-[#05070d] text-white selection:bg-green-500 selection:text-slate-900 overflow-x-hidden">
+      <div className="relative min-h-screen bg-white text-slate-900 selection:bg-emerald-500 selection:text-white overflow-x-hidden">
         
         {/* Subtle Mouse Glow */}
         <motion.div 
-          className="fixed pointer-events-none z-30 w-[300px] h-[300px] rounded-full bg-green-500/8 blur-[100px]"
+          className="fixed pointer-events-none z-30 w-[300px] h-[300px] rounded-full bg-emerald-500/3 blur-[100px]"
           style={{ x: glowX, y: glowY }}
         />
 
@@ -65,23 +65,23 @@ function Landing() {
         <GlowBackground />
 
         {/* Dedicated Landing Header */}
-        <header className="sticky top-0 z-50 border-b border-slate-900/40 bg-slate-950/65 backdrop-blur-xl">
+        <header className="sticky top-0 z-50 border-b border-slate-200/50 bg-white/75 backdrop-blur-xl">
           <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 group">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-green-500 to-emerald-400 text-slate-950 font-extrabold shadow shadow-green-500/30 transition-transform duration-300 group-hover:scale-105">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 text-white font-extrabold shadow shadow-emerald-500/20 transition-transform duration-300 group-hover:scale-105">
                 F
               </span>
-              <span className="text-xl font-extrabold tracking-tight text-white">
-                FitFlow<span className="text-green-400">AI</span>
+              <span className="text-xl font-extrabold tracking-tight text-slate-900">
+                FitFlow<span className="text-emerald-600">AI</span>
               </span>
             </Link>
 
             <div className="flex items-center gap-5">
-              <Link to="/login" className="text-sm font-semibold text-slate-400 hover:text-white transition duration-200">
+              <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition duration-200">
                 Sign In
               </Link>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link to="/signup" className="rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-5 py-2.5 text-sm font-bold text-slate-950 transition shadow-md shadow-green-500/10 hover:shadow-lg hover:shadow-green-500/20">
+                <Link to="/signup" className="rounded-full bg-emerald-600 hover:bg-emerald-700 px-5 py-2.5 text-sm font-bold text-white transition shadow-md shadow-emerald-500/10 hover:shadow-lg">
                   Get Started
                 </Link>
               </motion.div>
@@ -93,23 +93,23 @@ function Landing() {
         <PremiumHero />
 
         {/* Stats Section */}
-        <section className="relative border-y border-slate-900 bg-slate-950/20 py-16 px-6 z-10">
+        <section className="relative border-y border-slate-200 bg-slate-50 py-16 px-6 z-10">
           <div className="mx-auto max-w-6xl">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
               <div>
-                <h3 className="text-4xl font-extrabold text-white">12K+</h3>
+                <h3 className="text-4xl font-black text-slate-900">12K+</h3>
                 <p className="mt-2 text-sm text-slate-500 uppercase tracking-wider font-semibold">Active Readers</p>
               </div>
               <div>
-                <h3 className="text-4xl font-extrabold text-green-400">60+</h3>
+                <h3 className="text-4xl font-black text-emerald-600">60+</h3>
                 <p className="mt-2 text-sm text-slate-500 uppercase tracking-wider font-semibold">Expert Articles</p>
               </div>
               <div>
-                <h3 className="text-4xl font-extrabold text-white">5</h3>
+                <h3 className="text-4xl font-black text-slate-900">5</h3>
                 <p className="mt-2 text-sm text-slate-500 uppercase tracking-wider font-semibold">Wellness Categories</p>
               </div>
               <div>
-                <h3 className="text-4xl font-extrabold text-green-400">99.8%</h3>
+                <h3 className="text-4xl font-black text-emerald-600">99.8%</h3>
                 <p className="mt-2 text-sm text-slate-500 uppercase tracking-wider font-semibold">Satisfaction Rate</p>
               </div>
             </div>
@@ -120,8 +120,8 @@ function Landing() {
         <section className="py-28 px-6 relative z-10">
           <div className="mx-auto max-w-6xl">
             <div className="text-center mb-20">
-              <h2 className="text-3xl font-extrabold sm:text-5xl bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Expert-Curated Categories</h2>
-              <p className="mt-4 text-slate-400 text-lg">Everything you need to optimize your daily health routine.</p>
+              <h2 className="text-3xl font-black sm:text-5xl bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Expert-Curated Categories</h2>
+              <p className="mt-4 text-slate-600 text-lg">Everything you need to optimize your daily health routine.</p>
             </div>
 
             <motion.div
@@ -135,30 +135,30 @@ function Landing() {
                 <motion.div
                   key={i}
                   variants={itemVariants}
-                  whileHover={{ y: -6, borderColor: "rgba(34, 197, 94, 0.3)" }}
-                  className="rounded-3xl border border-slate-900 bg-slate-950/45 p-8 transition-all duration-300 shadow-xl backdrop-blur-sm"
+                  whileHover={{ y: -6, borderColor: "rgba(16, 185, 129, 0.3)" }}
+                  className="rounded-3xl border border-slate-200 bg-white p-8 transition-all duration-300 shadow-sm hover:shadow-md"
                 >
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800/80 mb-6">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 border border-slate-200/80 mb-6">
                     {cat.icon}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{cat.name}</h3>
-                  <p className="text-sm leading-6 text-slate-400">{cat.desc}</p>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">{cat.name}</h3>
+                  <p className="text-sm leading-6 text-slate-600">{cat.desc}</p>
                 </motion.div>
               ))}
 
               {/* Callout Card */}
               <motion.div
                 variants={itemVariants}
-                whileHover={{ y: -6, borderColor: "rgba(34, 197, 94, 0.4)" }}
-                className="rounded-3xl border border-slate-900 bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-transparent p-8 flex flex-col justify-between shadow-xl backdrop-blur-sm"
+                whileHover={{ y: -6, borderColor: "rgba(16, 185, 129, 0.4)" }}
+                className="rounded-3xl border border-slate-200 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-transparent p-8 flex flex-col justify-between shadow-sm hover:shadow-md"
               >
                 <div>
-                  <h3 className="text-xl font-bold text-green-400 mb-3">And Much More...</h3>
-                  <p className="text-sm leading-6 text-slate-455">
+                  <h3 className="text-xl font-bold text-emerald-600 mb-3">And Much More...</h3>
+                  <p className="text-sm leading-6 text-slate-600">
                     Get custom recipes, supplements guidance, hydration benchmarks, and mental fitness guidelines to keep you performing at peak capacity.
                   </p>
                 </div>
-                <Link to="/signup" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-green-400 hover:text-green-300 transition-all duration-300 hover:gap-2.5">
+                <Link to="/signup" className="mt-8 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-all duration-300 hover:gap-2.5">
                   Join to explore
                   <FaChevronRight className="text-xs" />
                 </Link>
@@ -168,26 +168,26 @@ function Landing() {
         </section>
 
         {/* CTA Bottom Section */}
-        <section className="relative bg-slate-950/40 py-24 px-6 border-t border-slate-900/60 text-center z-10 overflow-hidden">
+        <section className="relative bg-slate-50 py-24 px-6 border-t border-slate-200 text-center z-10 overflow-hidden">
           <div className="absolute inset-0 opacity-10 pointer-events-none">
             <div className="absolute right-[10%] top-[-20%] w-[300px] h-[300px] rounded-full bg-emerald-500 blur-[90px]" />
           </div>
 
           <div className="mx-auto max-w-4xl relative z-10">
-            <h2 className="text-3xl font-extrabold sm:text-5xl tracking-tight text-white mb-5">
+            <h2 className="text-3xl font-black sm:text-5xl tracking-tight text-slate-900 mb-5">
               Ready to Upgrade Your Lifestyle?
             </h2>
-            <p className="mt-4 mx-auto max-w-xl text-slate-400 text-base sm:text-lg mb-10">
+            <p className="mt-4 mx-auto max-w-xl text-slate-600 text-base sm:text-lg mb-10">
               Create a free account in 30 seconds and gain instant access to all fitness and nutrition articles.
             </p>
             <div className="flex justify-center gap-5 flex-wrap">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link to="/signup" className="rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-4 text-base font-bold text-slate-950 shadow-lg shadow-green-500/20">
+                <Link to="/signup" className="rounded-full bg-emerald-600 hover:bg-emerald-700 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-500/20">
                   Register Free
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link to="/login" className="rounded-full border border-slate-800 bg-slate-900/20 backdrop-blur-sm px-8 py-4 text-base font-bold text-slate-300 hover:border-slate-600 hover:text-white transition duration-305">
+                <Link to="/login" className="rounded-full border border-slate-200 bg-white px-8 py-4 text-base font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition duration-300">
                   Sign In
                 </Link>
               </motion.div>
@@ -196,7 +196,7 @@ function Landing() {
         </section>
 
         {/* Landing Footer */}
-        <footer className="border-t border-slate-900 py-10 text-center text-xs text-slate-600 bg-slate-950 relative z-10 tracking-wider">
+        <footer className="border-t border-slate-200 py-10 text-center text-xs text-slate-500 bg-white relative z-10 tracking-wider">
           <p>© {new Date().getFullYear()} FitFlowAI. All rights reserved. Designed for portfolios.</p>
         </footer>
 
