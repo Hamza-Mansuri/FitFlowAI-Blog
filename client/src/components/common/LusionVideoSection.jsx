@@ -228,20 +228,23 @@ export default function LusionVideoSection() {
 
   const handleCardClick = () => {
     if (isMobile) {
-      if (hoverVideoRef.current) {
-        // Unmute and request native fullscreen on mobile
-        hoverVideoRef.current.muted = false;
-        hoverVideoRef.current.play().then(() => {
-          const videoEl = hoverVideoRef.current;
+      const videoEl = hoverVideoRef.current;
+      if (videoEl) {
+        videoEl.muted = false;
+        videoEl.play().then(() => {
           if (videoEl.requestFullscreen) {
             videoEl.requestFullscreen();
+          } else if (videoEl.webkitEnterFullscreen) {
+            videoEl.webkitEnterFullscreen(); // iOS Safari native video fullscreen support
           } else if (videoEl.webkitRequestFullscreen) {
             videoEl.webkitRequestFullscreen();
           } else if (videoEl.msRequestFullscreen) {
             videoEl.msRequestFullscreen();
+          } else {
+            setIsPlayingFullscreen(true);
           }
         }).catch((err) => {
-          // Fallback to custom fullscreen if native fails
+          console.log("Native fullscreen failed, falling back to overlay:", err);
           setIsPlayingFullscreen(true);
         });
       } else {
@@ -358,7 +361,7 @@ export default function LusionVideoSection() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleCardClick}
-        className="relative w-full max-w-5xl aspect-video overflow-hidden bg-black shadow-2xl border border-slate-100 flex items-center justify-center group cursor-none z-10"
+        className="relative w-full max-w-5xl aspect-video overflow-hidden bg-black shadow-2xl border border-slate-100 flex items-center justify-center group cursor-pointer md:cursor-none z-10"
         data-cursor="play"
       >
         {/* Cover image placeholder */}
