@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
 
 /**
  * HeroSlider Component
  * Manages slide images, slide-up transition animations, and the Ken Burns effect.
+ * Supports custom responsive focal points and mobile-specific picture crops.
  */
 export function HeroSlider({
   slides,
@@ -13,13 +14,37 @@ export function HeroSlider({
   onTransitionComplete
 }) {
   const slideRefs = useRef([]);
+  const [viewport, setViewport] = useState("desktop");
 
-  // Preload the next slide's image
+  // Track viewport layout category
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setViewport("mobile");
+      } else if (width < 1024) {
+        setViewport("tablet");
+      } else {
+        setViewport("desktop");
+      }
+    };
+    
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Preload the next slide's image based on the active viewport crop
   useEffect(() => {
     const nextIndex = (currentIndex + 1) % slides.length;
+    const nextSlide = slides[nextIndex];
+    const preloadUrl = (viewport === "mobile" && nextSlide.mobileImage)
+      ? nextSlide.mobileImage
+      : nextSlide.image;
+
     const img = new Image();
-    img.src = slides[nextIndex].image;
-  }, [currentIndex, slides]);
+    img.src = preloadUrl;
+  }, [currentIndex, slides, viewport]);
 
   useEffect(() => {
     // Initial setup: position active slide at 0, others at 100% (below)
@@ -111,12 +136,22 @@ export function HeroSlider({
           ref={(el) => (slideRefs.current[idx] = el)}
           className="absolute inset-0 w-full h-full overflow-hidden"
         >
-          <img
-            src={slide.image}
-            alt={slide.heading}
-            loading={idx === 0 ? "eager" : "lazy"}
-            className="w-full h-full object-cover object-center select-none will-change-transform"
-          />
+          <picture className="w-full h-full">
+            {slide.mobileImage && (
+              <source media="(max-width: 639px)" srcSet={slide.mobileImage} />
+            )}
+            <img
+              src={slide.image}
+              alt={slide.heading}
+              loading={idx === 0 ? "eager" : "lazy"}
+              className="w-full h-full object-cover select-none will-change-transform"
+              style={{
+                objectPosition: slide.position
+                  ? slide.position[viewport] || slide.position.desktop
+                  : "center center"
+              }}
+            />
+          </picture>
         </div>
       ))}
     </div>
