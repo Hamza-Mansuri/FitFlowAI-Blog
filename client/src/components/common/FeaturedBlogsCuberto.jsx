@@ -12,18 +12,60 @@ const FALLBACK_VIDEOS_BLACK = [
 
 function FeaturedBlogCard({ blog, index }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [inView, setInView] = useState(false);
   const videoRef = useRef(null);
+  const cardRef = useRef(null);
 
+  // Detect mobile / touch devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Intersection observer to play/pause video on mobile when in viewport
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.2 }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isMobile]);
+
+  // Control video play/pause status
   useEffect(() => {
     if (videoRef.current) {
-      if (isHovered) {
-        videoRef.current.play().catch((err) => console.log("Video autoplay prevented:", err));
+      if (isMobile) {
+        if (inView) {
+          videoRef.current.play().catch((err) => console.log("Mobile video autoplay prevented:", err));
+        } else {
+          videoRef.current.pause();
+        }
       } else {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
+        if (isHovered) {
+          videoRef.current.play().catch((err) => console.log("Desktop video autoplay prevented:", err));
+        } else {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
       }
     }
-  }, [isHovered]);
+  }, [isHovered, isMobile, inView]);
 
   const activeVideo = blog.videoUrl || FALLBACK_VIDEOS_BLACK[index % FALLBACK_VIDEOS_BLACK.length];
   // Apply staggered vertical translation to create a zig-zag column offset
@@ -48,6 +90,7 @@ function FeaturedBlogCard({ blog, index }) {
 
   return (
     <motion.div
+      ref={cardRef}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
@@ -68,7 +111,7 @@ function FeaturedBlogCard({ blog, index }) {
           src={blog.image}
           alt={blog.title}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            isHovered ? "opacity-0" : "opacity-100"
+            (isHovered || (isMobile && inView)) ? "opacity-0" : "opacity-100"
           }`}
         />
 
@@ -80,7 +123,7 @@ function FeaturedBlogCard({ blog, index }) {
           muted
           playsInline
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-            isHovered ? "opacity-100" : "opacity-0"
+            (isHovered || (isMobile && inView)) ? "opacity-100" : "opacity-0"
           }`}
         />
 

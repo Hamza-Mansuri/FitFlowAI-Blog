@@ -5,88 +5,9 @@ import { useEffect, useState } from "react";
 import SEO from "../components/common/SEO";
 import GlowBackground from "../components/common/GlowBackground";
 import PageTransition from "../components/common/PageTransition";
+import PremiumHero from "../components/layout/PremiumHero";
 
 function Landing() {
-  // Typewriter effect state
-  const [seg1, setSeg1] = useState("");
-  const [seg2, setSeg2] = useState("");
-  const [seg3, setSeg3] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
-
-  useEffect(() => {
-    // Deliberate mistake: "Bild" -> delete back to "Bi" -> type "Build a Stronger, "
-    const frames1 = [
-      "B", 
-      "Bi", 
-      "Bil", 
-      "Bild", // Mistake!
-      "Bild", // Pause
-      "Bil",  // Backspace
-      "Bi",   // Backspace
-      "B",    // Backspace
-      "Bu", 
-      "Bui", 
-      "Buil", 
-      "Build", 
-      "Build ", 
-      "Build a", 
-      "Build a ",
-      "Build a S", 
-      "Build a St", 
-      "Build a Str", 
-      "Build a Stro", 
-      "Build a Stron", 
-      "Build a Strong", 
-      "Build a Stronge", 
-      "Build a Stronger", 
-      "Build a Stronger,", 
-      "Build a Stronger, "
-    ];
-    
-    const frames2 = [
-      "H", "He", "Hea", "Heal", "Healt", "Health", "Healthi", "Healthie", "Healthier"
-    ];
-    
-    const frames3 = [
-      " ", "Y", "Yo", "You", "You."
-    ];
-
-    let currentFrame = 0;
-    const timer1 = setInterval(() => {
-      if (currentFrame < frames1.length) {
-        setSeg1(frames1[currentFrame]);
-        currentFrame++;
-      } else {
-        clearInterval(timer1);
-        
-        let currentFrame2 = 0;
-        const timer2 = setInterval(() => {
-          if (currentFrame2 < frames2.length) {
-            setSeg2(frames2[currentFrame2]);
-            currentFrame2++;
-          } else {
-            clearInterval(timer2);
-            
-            let currentFrame3 = 0;
-            const timer3 = setInterval(() => {
-              if (currentFrame3 < frames3.length) {
-                setSeg3(frames3[currentFrame3]);
-                currentFrame3++;
-              } else {
-                clearInterval(timer3);
-                setIsTyping(false);
-              }
-            }, 60);
-          }
-        }, 70);
-      }
-    }, 65);
-
-    return () => {
-      clearInterval(timer1);
-    };
-  }, []);
-
   // Mouse Follow Glow Effect coordinates
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -168,68 +89,8 @@ function Landing() {
           </div>
         </header>
 
-        {/* Hero Section */}
-        <section className="relative pt-24 pb-28 lg:pt-36 lg:pb-40 px-6 z-10">
-          <div className="mx-auto max-w-5xl text-center">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 rounded-full border border-slate-800/80 bg-slate-900/30 px-4 py-1.5 text-xs font-semibold text-green-400 backdrop-blur-md mb-8"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              YOUR ULTIMATE WELLNESS COMPANION
-            </motion.div>
-
-            <motion.h1
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 1, 0.5, 1] }}
-              className="text-5xl font-black tracking-tight sm:text-7xl leading-[1.1] bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-            >
-              {seg1} <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                {seg2}
-              </span>
-              {seg3}
-              {isTyping && <span className="animate-pulse text-green-400 select-none">|</span>}
-            </motion.h1>
-
-            <motion.p
-              initial={{ y: 25, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 1, 0.5, 1] }}
-              className="mt-8 mx-auto max-w-2xl text-lg leading-8 text-slate-400"
-            >
-              Explore science-backed fitness guides, workouts, nutrition, and recovery routines.
-            </motion.p>
-
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 1, 0.5, 1] }}
-              className="mt-12 flex flex-wrap items-center justify-center gap-5"
-            >
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  to="/signup"
-                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-4 text-base font-bold text-slate-950 shadow-lg shadow-green-500/20"
-                >
-                  Join Now Free
-                  <FaChevronRight className="text-xs" />
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  to="/login"
-                  className="rounded-full border border-slate-800 bg-slate-900/20 backdrop-blur-sm px-8 py-4 text-base font-bold text-slate-300 hover:border-slate-600 hover:text-white hover:bg-slate-900/40 transition duration-300"
-                >
-                  Sign In to Platform
-                </Link>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
+        {/* Premium Interactive Hero Section */}
+        <PremiumHero />
 
         {/* Stats Section */}
         <section className="relative border-y border-slate-900 bg-slate-950/20 py-16 px-6 z-10">
